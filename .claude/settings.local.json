@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sL \"https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Landing%20page%20assets/Nav%20bar/elixirpaylogo.svg\" -o /tmp/elixirpay-logo.svg)",
+      "Read(//tmp/**)",
+      "Bash(python3 -)",
+      "Bash(pip install *)",
+      "Bash(pip3 install *)",
+      "Bash(python3 -m pip install --quiet --disable-pip-version-check --break-system-packages Pillow)",
+      "Bash(qlmanage -t -s 800 -o /tmp /tmp/elixirpay-logo-on-dark.svg)",
+      "Bash(grep -n \"Container is \\\\`border-b-0\\\\`\\\\\" — no bottom border, only top/left/\" /Users/gopinath/Downloads/elixirpay/clude.md)"
+    ]
+  }
+}

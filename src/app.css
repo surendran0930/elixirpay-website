@@ -1,0 +1,116 @@
+/* motion-core:tokens:start */
+/* NOTE: the motion-core installer originally prepended Tailwind v4 syntax
+   here (`@import "tailwindcss"`, `@variant`, `@theme`) — removed because
+   this project runs Tailwind v3 via the `@tailwind` directives below, and
+   the v4 import breaks the postcss build. Only the plain CSS custom
+   properties are kept. */
+:root {
+	--base-hue: 265;
+
+	--radius-base: 0.275rem;
+
+	--background-inset: oklch(0.9764 0.0013 var(--base-hue));
+	--background: oklch(1 0 0);
+	--background-muted: oklch(0.956 0.002 var(--base-hue));
+	--fixed-light: oklch(1 0 0);
+	--fixed-dark: oklch(0.183 0.006 var(--base-hue));
+	--foreground: oklch(0.1881 0.006 var(--base-hue));
+	--foreground-muted: oklch(0.5493 0.0081 var(--base-hue));
+	--accent: oklch(0.6996 0.201959 44.4414);
+	--accent-secondary: oklch(0.5096 0.151959 44.4414);
+	--border: oklch(0.4224 0.0013 var(--base-hue) / 0.1);
+
+	--shadow-xs: 0px 1px 1px -0.5px rgba(0, 0, 0, 0.06);
+	--shadow-sm:
+		0px 1px 1px -0.5px rgba(0, 0, 0, 0.06),
+		0px 3px 3px -1.5px rgba(0, 0, 0, 0.06);
+	--shadow-md:
+		0px 1px 1px -0.5px rgba(0, 0, 0, 0.06),
+		0px 3px 3px -1.5px rgba(0, 0, 0, 0.06), 0px 6px 6px -3px rgba(0, 0, 0, 0.06);
+	--shadow-lg:
+		0px 1px 1px -0.5px rgba(0, 0, 0, 0.06),
+		0px 3px 3px -1.5px rgba(0, 0, 0, 0.06),
+		0px 6px 6px -3px rgba(0, 0, 0, 0.06), 0px 12px 12px -6px rgba(0, 0, 0, 0.06);
+	--shadow-xl:
+		0px 1px 1px -0.5px rgba(0, 0, 0, 0.06),
+		0px 3px 3px -1.5px rgba(0, 0, 0, 0.06),
+		0px 6px 6px -3px rgba(0, 0, 0, 0.06),
+		0px 12px 12px -6px rgba(0, 0, 0, 0.06),
+		0px 24px 24px -12px rgba(0, 0, 0, 0.06);
+	--shadow-2xl:
+		0px 1px 1px -0.5px rgba(0, 0, 0, 0.06),
+		0px 3px 3px -1.5px rgba(0, 0, 0, 0.06),
+		0px 6px 6px -3px rgba(0, 0, 0, 0.06),
+		0px 12px 12px -6px rgba(0, 0, 0, 0.06),
+		0px 24px 24px -12px rgba(0, 0, 0, 0.06),
+		0px 48px 48px -24px rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+	--background-inset: oklch(0.2099 0.0039 var(--base-hue));
+	--background: oklch(0.2574 0.0056 var(--base-hue));
+	--background-muted: oklch(0.283 0.0091 var(--base-hue));
+	--foreground: oklch(0.9674 0.0013 var(--base-hue));
+	--foreground-muted: oklch(0.669 0.0107 var(--base-hue));
+	--accent: oklch(0.6996 0.181959 44.4414);
+	--accent-secondary: oklch(0.5096 0.131959 44.4414);
+	--border: oklch(0.999 0.013 var(--base-hue) / 0.05);
+}
+
+/* motion-core:tokens:end */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Design is authored at 1920x1080 (Figma "Large desktop" frame, Section 3/14).
+  Use CSS clamp() on type/spacing that needs to scale fluidly between the
+  breakpoints in the Responsive Sizing Reference table, rather than jumping
+  hard at each breakpoint. Example pattern for a hero heading:
+
+  .hero-heading {
+    font-size: clamp(2rem, 1.2rem + 3vw, 4.5rem);
+  }
+*/
+
+:root {
+	--design-width: 1920px;
+	--container-max: 1920px;
+	--container-padding: clamp(1rem, 2vw, 6rem);
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	@apply bg-white text-gray-900 font-sans font-regular antialiased;
+}
+
+/* Web scale headings — Tokens/Typography, mapped to fluid sizes so the
+   1920px-authored design scales smoothly down to the smallest breakpoint
+   instead of jumping hard at each one. */
+h1 {
+	font-size: clamp(2.5rem, 1.6rem + 3.2vw, 5.5rem); /* scales toward web-88 */
+	font-weight: 700;
+	line-height: 1.1;
+}
+h2 {
+	font-size: clamp(2rem, 1.5rem + 1.8vw, 3.5rem); /* scales toward web-56 */
+	font-weight: 700;
+	line-height: 1.15;
+}
+h3 {
+	font-size: clamp(1.5rem, 1.2rem + 1.2vw, 2.5rem); /* scales toward web-40 */
+	font-weight: 600;
+	line-height: 1.25;
+}
+p {
+	@apply text-para-16 font-regular;
+}
+
+.container-page {
+	max-width: var(--container-max);
+	margin-inline: auto;
+	padding-inline: var(--container-padding);
+}
