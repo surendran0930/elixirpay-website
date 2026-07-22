@@ -1,0 +1,1 @@
+import{a,f as e}from"../chunks/CBmJNBWL.js";import"../chunks/DyPnr8uK.js";import{e as r,$ as s}from"../chunks/CcyLnShA.js";import{h as n}from"../chunks/SmHZ2aM6.js";var c=e('<section class="container-page py-24"><h1 class="text-4xl font-bold">Careers</h1></section>');function h(o){var t=c();n("1thlcsk",i=>{r(()=>{s.title="Careers — ElixirPay"})}),a(o,t)}export{h as component};
