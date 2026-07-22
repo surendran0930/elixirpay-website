@@ -1,4 +1,4 @@
-import { g as getContext, a as attr, b as attr_class, c as ensure_array_like, e as escape_html, u as unsubscribe_stores, d as derived, f as store_get } from "../../chunks/index.js";
+import { g as getContext, a as attr, b as ensure_array_like, e as escape_html, d as derived, c as store_get, u as unsubscribe_stores } from "../../chunks/index.js";
 import "clsx";
 import "@sveltejs/kit/internal";
 import "../../chunks/exports.js";
@@ -6,7 +6,7 @@ import "../../chunks/utils2.js";
 import "@sveltejs/kit/internal/server";
 import "../../chunks/root.js";
 import "../../chunks/state.svelte.js";
-import { B as Button } from "../../chunks/Button.js";
+import { S as SiteNav } from "../../chunks/SiteNav.js";
 const getStores = () => {
   const stores$1 = getContext("__svelte__");
   return {
@@ -28,26 +28,6 @@ const page = {
     return store.subscribe(fn);
   }
 };
-function Nav($$renderer) {
-  const logo = "https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Landing%20page%20assets/Nav%20bar/elixirpaylogo.svg";
-  $$renderer.push(`<header class="container-page sticky top-0 z-30 flex items-center justify-between bg-white py-6"><a href="/" class="inline-flex items-center rounded-lg bg-gray-900 px-4 py-2"><img${attr("src", logo)} alt="ElixirPay" class="h-16 w-auto"/></a> <nav class="hidden md:flex items-center gap-8"><a href="/about" class="text-para-16 hover:text-blue-500">About Us</a> <a href="/services" class="text-para-16 hover:text-blue-500">Services</a> <a href="/careers" class="text-para-16 hover:text-blue-500">Careers</a> <a href="/blog" class="text-para-16 hover:text-blue-500">Blog</a> <a href="/contact" class="text-para-16 hover:text-blue-500">Contact</a></nav> <div class="hidden md:block">`);
-  Button($$renderer, {
-    color: "blue",
-    variant: "solid",
-    children: ($$renderer2) => {
-      $$renderer2.push(`<!---->Get Started`);
-    }
-  });
-  $$renderer.push(`<!----></div> <button class="md:hidden" aria-label="Open menu">☰</button></header> <div${attr_class(`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 md:hidden ${"pointer-events-none opacity-0"}`)} role="presentation"></div> <aside${attr_class(`fixed inset-y-0 right-0 z-50 flex w-72 max-w-[80%] transform flex-col gap-6 border-l border-gray-200 bg-white p-6 text-gray-900 shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${"translate-x-full"}`)}><div class="flex items-center justify-between"><span class="text-web-16 font-semibold">Menu</span> <button aria-label="Close menu">✕</button></div> <nav class="flex flex-col gap-4 text-para-16"><a href="/about">About Us</a> <a href="/services">Services</a> <a href="/careers">Careers</a> <a href="/blog">Blog</a> <a href="/contact">Contact</a></nav> <div class="mt-auto" role="presentation">`);
-  Button($$renderer, {
-    color: "blue",
-    variant: "solid",
-    children: ($$renderer2) => {
-      $$renderer2.push(`<!---->Get Started`);
-    }
-  });
-  $$renderer.push(`<!----></div></aside>`);
-}
 function Footer($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     const footerAssetBase = "https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Landing%20page%20assets/section%2011%20-%20footer/";
@@ -189,10 +169,11 @@ function _layout($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     var $$store_subs;
     let { children } = $$props;
-    let isLanding = derived(() => store_get($$store_subs ??= {}, "$page", page).url.pathname === "/");
-    if (!isLanding()) {
+    let hasOwnNav = derived(() => store_get($$store_subs ??= {}, "$page", page).url.pathname === "/" || store_get($$store_subs ??= {}, "$page", page).url.pathname === "/about" || store_get($$store_subs ??= {}, "$page", page).url.pathname === "/products" || store_get($$store_subs ??= {}, "$page", page).url.pathname === "/solutions" || store_get($$store_subs ??= {}, "$page", page).url.pathname === "/industries");
+    let activeLink = derived(() => store_get($$store_subs ??= {}, "$page", page).url.pathname === "/products" ? "products" : store_get($$store_subs ??= {}, "$page", page).url.pathname === "/solutions" ? "solutions" : store_get($$store_subs ??= {}, "$page", page).url.pathname === "/industries" ? "industries" : void 0);
+    if (!hasOwnNav()) {
       $$renderer2.push("<!--[0-->");
-      Nav($$renderer2);
+      SiteNav($$renderer2, { active: activeLink() });
     } else {
       $$renderer2.push("<!--[-1-->");
     }

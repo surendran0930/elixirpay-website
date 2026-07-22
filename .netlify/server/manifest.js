@@ -10,7 +10,7 @@ return {
 	assets: new Set([]),
 	mimeTypes: {},
 	_: {
-		client: {start:"_app/immutable/entry/start.DH2-pUM9.js",app:"_app/immutable/entry/app.Dc-JYjek.js",imports:["_app/immutable/entry/start.DH2-pUM9.js","_app/immutable/chunks/Dgqo_BHJ.js","_app/immutable/chunks/CcyLnShA.js","_app/immutable/chunks/NVyPV7LL.js","_app/immutable/chunks/Bb_Gk49F.js","_app/immutable/entry/app.Dc-JYjek.js","_app/immutable/chunks/C-lBK_Oq.js","_app/immutable/chunks/CcyLnShA.js","_app/immutable/chunks/NVyPV7LL.js","_app/immutable/chunks/BQ4wQo9I.js","_app/immutable/chunks/CBmJNBWL.js","_app/immutable/chunks/Bb_Gk49F.js","_app/immutable/chunks/DyjlGd7C.js","_app/immutable/chunks/DSFou65i.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
+		client: {start:"_app/immutable/entry/start.Cmo-r679.js",app:"_app/immutable/entry/app.DT6HslK9.js",imports:["_app/immutable/entry/start.Cmo-r679.js","_app/immutable/chunks/DqCiOAJ7.js","_app/immutable/chunks/DjRN0j8B.js","_app/immutable/chunks/O6rEZXpC.js","_app/immutable/entry/app.DT6HslK9.js","_app/immutable/chunks/M5ISalKM.js","_app/immutable/chunks/DjRN0j8B.js","_app/immutable/chunks/O6rEZXpC.js","_app/immutable/chunks/CRITFfRn.js","_app/immutable/chunks/TMtxk5pQ.js","_app/immutable/chunks/DpInNQHj.js","_app/immutable/chunks/CLFwgNYt.js"],stylesheets:[],fonts:[],uses_env_dynamic_public:false},
 		nodes: [
 			__memo(() => import('./nodes/0.js')),
 			__memo(() => import('./nodes/1.js')),
@@ -19,7 +19,9 @@ return {
 			__memo(() => import('./nodes/4.js')),
 			__memo(() => import('./nodes/5.js')),
 			__memo(() => import('./nodes/6.js')),
-			__memo(() => import('./nodes/7.js'))
+			__memo(() => import('./nodes/7.js')),
+			__memo(() => import('./nodes/8.js')),
+			__memo(() => import('./nodes/9.js'))
 		],
 		remotes: {
 			
@@ -61,10 +63,24 @@ return {
 				endpoint: null
 			},
 			{
-				id: "/services",
-				pattern: /^\/services\/?$/,
+				id: "/industries",
+				pattern: /^\/industries\/?$/,
 				params: [],
 				page: { layouts: [0,], errors: [1,], leaf: 7 },
+				endpoint: null
+			},
+			{
+				id: "/products",
+				pattern: /^\/products\/?$/,
+				params: [],
+				page: { layouts: [0,], errors: [1,], leaf: 8 },
+				endpoint: null
+			},
+			{
+				id: "/solutions",
+				pattern: /^\/solutions\/?$/,
+				params: [],
+				page: { layouts: [0,], errors: [1,], leaf: 9 },
 				endpoint: null
 			}
 		],

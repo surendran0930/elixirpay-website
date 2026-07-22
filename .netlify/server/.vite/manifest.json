@@ -10,9 +10,16 @@
       "_internal.js"
     ]
   },
-  "_Button.js": {
-    "file": "chunks/Button.js",
-    "name": "Button",
+  "_FluidSimulation.js": {
+    "file": "chunks/FluidSimulation.js",
+    "name": "FluidSimulation",
+    "imports": [
+      "_index.js"
+    ]
+  },
+  "_SiteNav.js": {
+    "file": "chunks/SiteNav.js",
+    "name": "SiteNav",
     "imports": [
       "_index.js"
     ]
@@ -129,10 +136,10 @@
       "_utils2.js",
       "_root.js",
       "_state.svelte.js",
-      "_Button.js"
+      "_SiteNav.js"
     ],
     "css": [
-      "_app/immutable/assets/_layout.D07pwoiV.css"
+      "_app/immutable/assets/_layout.Bqtwc8Sa.css"
     ]
   },
   "src/routes/+page.svelte": {
@@ -141,10 +148,12 @@
     "src": "src/routes/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index.js",
+      "_SiteNav.js",
+      "_FluidSimulation.js"
     ],
     "css": [
-      "_app/immutable/assets/_page.DimjBaNA.css"
+      "_app/immutable/assets/_page.DB7TeC2J.css"
     ]
   },
   "src/routes/about/+page.svelte": {
@@ -153,7 +162,12 @@
     "src": "src/routes/about/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index.js",
+      "_SiteNav.js",
+      "_FluidSimulation.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.C3uEkVpA.css"
     ]
   },
   "src/routes/blog/+page.svelte": {
@@ -180,17 +194,49 @@
     "src": "src/routes/contact/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js",
-      "_Button.js"
+      "_index.js"
     ]
   },
-  "src/routes/services/+page.svelte": {
-    "file": "entries/pages/services/_page.svelte.js",
-    "name": "entries/pages/services/_page.svelte",
-    "src": "src/routes/services/+page.svelte",
+  "src/routes/industries/+page.svelte": {
+    "file": "entries/pages/industries/_page.svelte.js",
+    "name": "entries/pages/industries/_page.svelte",
+    "src": "src/routes/industries/+page.svelte",
     "isEntry": true,
     "imports": [
-      "_index.js"
+      "_index.js",
+      "_SiteNav.js",
+      "_FluidSimulation.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.BtIbI_Ci.css"
+    ]
+  },
+  "src/routes/products/+page.svelte": {
+    "file": "entries/pages/products/_page.svelte.js",
+    "name": "entries/pages/products/_page.svelte",
+    "src": "src/routes/products/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index.js",
+      "_SiteNav.js",
+      "_FluidSimulation.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.BL4M-x43.css"
+    ]
+  },
+  "src/routes/solutions/+page.svelte": {
+    "file": "entries/pages/solutions/_page.svelte.js",
+    "name": "entries/pages/solutions/_page.svelte",
+    "src": "src/routes/solutions/+page.svelte",
+    "isEntry": true,
+    "imports": [
+      "_index.js",
+      "_SiteNav.js",
+      "_FluidSimulation.js"
+    ],
+    "css": [
+      "_app/immutable/assets/_page.CH2Kw6bE.css"
     ]
   },
   "virtual:__sveltekit/env": {
