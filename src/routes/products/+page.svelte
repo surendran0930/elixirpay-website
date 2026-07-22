@@ -407,9 +407,9 @@
 			Built Around Every Team
 		</h2>
 		<p class="mx-auto mt-6 max-w-4xl text-para-24 text-gray-500">
-			One platform. Different priorities.<br />
-			Every team gets the visibility<br />
-			and control they need without<br />
+			One platform. Different priorities.
+			Every team gets the visibility
+			and control they need without
 			switching between multiple tools.
 		</p>
 	</div>
