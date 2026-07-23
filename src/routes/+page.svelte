@@ -235,6 +235,26 @@
 	let headingProgress = $state(0);
 	let revealedWordCount = $derived(Math.round(headingProgress * headingWords.length));
 
+	// Seal "stamp drop" — same trigger-once IntersectionObserver + drop-in
+	// animation as the About/Solutions/Industries pages' wax seal.
+	/** @type {HTMLImageElement | undefined} */
+	let sealEl = $state();
+	let sealStamped = $state(false);
+
+	onMount(() => {
+		let sealStarted = false;
+		const sealObserver = new IntersectionObserver(
+			(entries) => {
+				if (!entries[0].isIntersecting || sealStarted) return;
+				sealStarted = true;
+				sealStamped = true;
+			},
+			{ threshold: 0.3 }
+		);
+		if (sealEl) sealObserver.observe(sealEl);
+		return () => sealObserver.disconnect();
+	});
+
 	onMount(() => {
 		let ticking = false;
 		const updateHeadingProgress = () => {
@@ -299,7 +319,7 @@
 		{
 			key: 'ecommerce',
 			label: 'E-commerce',
-			gradient: 'from-orange-500 to-orange-600',
+			gradient: 'from-orange-100 to-orange-200',
 			heading: 'E-commerce',
 			description:
 				'Accept payments, automate payouts, and manage your entire payment ecosystem\nwith a secure platform designed to help businesses grow faster.',
@@ -309,7 +329,7 @@
 		{
 			key: 'healthcare',
 			label: 'Healthcare',
-			gradient: 'from-red-400 to-orange-400',
+			gradient: 'from-red-100 to-orange-100',
 			heading: 'Healthcare',
 			description:
 				'Accept patient payments and insurance settlements securely, with billing your care teams can trust.',
@@ -319,7 +339,7 @@
 		{
 			key: 'education',
 			label: 'Education',
-			gradient: 'from-orange-500 to-red-500',
+			gradient: 'from-orange-100 to-red-100',
 			heading: 'Education',
 			description:
 				'Simplify tuition and fee collection with flexible, automated payment plans for students and parents.',
@@ -329,7 +349,7 @@
 		{
 			key: 'travel',
 			label: 'Travel',
-			gradient: 'from-blue-500 to-blue-400',
+			gradient: 'from-blue-100 to-blue-200',
 			heading: 'Travel',
 			description:
 				'Handle multi-currency bookings and refunds smoothly, so travelers can pay however suits them best.',
@@ -339,7 +359,7 @@
 		{
 			key: 'logistics',
 			label: 'Logistics',
-			gradient: 'from-gray-900 to-gray-800',
+			gradient: 'from-gray-100 to-gray-200',
 			heading: 'Logistics',
 			description:
 				'Move and reconcile money across accounts with the visibility and controls a finance team needs.',
@@ -349,7 +369,7 @@
 		{
 			key: 'logistics-2',
 			label: 'Logistics',
-			gradient: 'from-blue-600 to-blue-800',
+			gradient: 'from-blue-100 to-blue-200',
 			heading: 'Logistics',
 			description:
 				'Automate subscription billing and recurring revenue so your product team can focus on shipping.',
@@ -359,7 +379,7 @@
 		{
 			key: 'retail',
 			label: 'Retail',
-			gradient: 'from-amber-400 to-amber-100',
+			gradient: 'from-amber-100 to-amber-200',
 			heading: 'Retail',
 			description:
 				'Unify in-store and online payments into one dashboard, so every sales channel reconciles automatically.',
@@ -369,7 +389,7 @@
 		{
 			key: 'ngo',
 			label: 'NGO',
-			gradient: 'from-blue-500 to-blue-600',
+			gradient: 'from-blue-100 to-blue-200',
 			heading: 'NGO',
 			description:
 				'Accept donations securely, improve transparency, and make giving simple for supporters around the world.',
@@ -744,7 +764,12 @@
 	/>
 
 	<div class="container-page relative z-10 flex flex-1 flex-col items-center justify-center text-center">
-		<img src={sealLogo} alt="" class="h-36 w-auto" />
+		<img
+			bind:this={sealEl}
+			src={sealLogo}
+			alt=""
+			class="mx-auto h-36 w-auto {sealStamped ? 'seal-stamp' : 'opacity-0'}"
+		/>
 		<!-- Word-by-word scroll reveal (see headingProgress in script) — the
 		     screenshot's effect on a light background: unrevealed words sit
 		     at a light gray and darken to gray-900 as their index falls
@@ -819,6 +844,26 @@
 		}
 		to {
 			transform: rotateY(360deg);
+		}
+	}
+
+	/* Drops from above and settles like a stamp — same one-continuous-spring
+	   motion (ease-out-back cubic-bezier) as the About/Solutions/Industries
+	   pages' wax seal. */
+	.seal-stamp {
+		animation: stamp-drop 1100ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+	}
+	@keyframes stamp-drop {
+		0% {
+			transform: translateY(-320px) scale(0.85);
+			opacity: 0;
+		}
+		55% {
+			opacity: 1;
+		}
+		100% {
+			transform: translateY(0) scale(1);
+			opacity: 1;
 		}
 	}
 
@@ -1201,7 +1246,7 @@
 							<div
 								class="flex h-full w-full items-center justify-center bg-gradient-to-b {industry.gradient}"
 							>
-								<span class="font-mono text-para-16 font-medium tracking-widest text-white/90">
+								<span class="font-mono text-para-16 font-medium tracking-widest text-gray-800/80">
 									{industry.label}
 								</span>
 							</div>
@@ -1272,7 +1317,7 @@
 							: 'opacity-100'}"
 					>
 						<span
-							class="[writing-mode:vertical-rl] rotate-180 font-mono text-para-16 font-medium tracking-widest text-white/90"
+							class="[writing-mode:vertical-rl] rotate-180 font-mono text-para-16 font-medium tracking-widest text-gray-800/80"
 						>
 							{industry.label}
 						</span>

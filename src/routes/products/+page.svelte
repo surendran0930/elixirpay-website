@@ -10,6 +10,8 @@
 	// mechanic), reused verbatim per explicit request.
 	const teamIconBase =
 		'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Landing%20page%20assets/Section%207%20-%20Built%20Around%20Every%20Team/';
+	const teamsBgIconLeft = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/elixir%20icon%201.svg';
+	const teamsBgIconRight = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/elixir%20icon%202.svg';
 	const teams = [
 		{
 			key: 'developers',
@@ -401,8 +403,19 @@
 <!-- "Built Around Every Team" — same section as the home page, reused
      verbatim (heading, teams, hover-popup grid on desktop, plain stacked
      list on mobile/tablet). -->
-<section class="bg-white py-[160px]">
-	<div class="container-page text-center">
+<section class="relative overflow-hidden bg-white py-[160px]">
+	<img
+		src={teamsBgIconLeft}
+		alt=""
+		class="pointer-events-none absolute -left-24 -top-24 w-[420px] opacity-60"
+	/>
+	<img
+		src={teamsBgIconRight}
+		alt=""
+		class="pointer-events-none absolute -bottom-24 -right-24 w-[420px] opacity-60"
+	/>
+
+	<div class="container-page relative z-10 text-center">
 		<h2 class="mx-auto max-w-3xl text-web-32 font-semibold text-gray-800 sm:text-web-40 md:text-web-48">
 			Built Around Every Team
 		</h2>
@@ -414,7 +427,7 @@
 		</p>
 	</div>
 
-	<div class="mx-4 mt-20 sm:mx-8 lg:hidden">
+	<div class="relative z-10 mx-4 mt-20 sm:mx-8 lg:hidden">
 		{#each teams as team, i (team.key)}
 			<div class="border border-gray-200 p-8 {i % 2 === 1 ? 'bg-gray-50' : 'bg-white'}">
 				<img src={team.icon} alt="" class="h-10 w-10" />
@@ -438,7 +451,7 @@
 		{/each}
 	</div>
 
-	<div class="mx-4 mt-20 hidden border-l border-t border-gray-200 sm:mx-8 lg:mx-[200px] lg:block">
+	<div class="relative z-10 mx-4 mt-20 hidden border-l border-t border-gray-200 sm:mx-8 lg:mx-[200px] lg:block">
 		<div class="grid lg:grid-cols-3">
 			{#each teams as team, i (team.key)}
 				<div
@@ -500,7 +513,11 @@
 				Choosing a payment platform is an important decision. Here are answers to the questions
 				businesses ask before getting started with ElixirPay.
 			</p>
-			<img src={faqIllustration} alt="" class="mt-auto hidden h-auto lg:block lg:w-96" />
+			<img
+				src={faqIllustration}
+				alt=""
+				class="mt-auto hidden h-auto translate-y-40 lg:block lg:w-[28rem]"
+			/>
 		</div>
 
 		<div class="rounded-2xl border border-gray-200">

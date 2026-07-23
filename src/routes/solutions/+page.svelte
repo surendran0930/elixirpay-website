@@ -15,6 +15,11 @@
 	const aboutRightIllustration = aboutIllustrationBase + 'right.png';
 	const sealLogo = aboutIllustrationBase + '3d%20elixirpay.png';
 
+	// Same oversized background icon pair as the home page's "Built Around
+	// Every Team" section, reused behind this section's heading.
+	const teamsBgIconLeft = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/elixir%20icon%201.svg';
+	const teamsBgIconRight = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/elixir%20icon%202.svg';
+
 	/** @type {HTMLImageElement | undefined} */
 	let sealEl = $state();
 	let sealStamped = $state(false);
@@ -411,7 +416,7 @@
      bordered-panel mechanic as the Products page's "Collect Payments
      Without Limits" section, reused per explicit "use the components we
      used before" request. -->
-<section class="bg-white-100 py-[160px]">
+<section class="bg-gray-100 py-[160px]">
 	<div class="container-page text-center">
 		<h2 class="mx-auto max-w-2xl text-web-32 font-bold text-gray-900 md:text-web-40">
 			Purpose-Built for <br> Modern Business Models
@@ -437,7 +442,7 @@
 	</div>
 
 	<div class="mx-auto mt-12 max-w-[1920px] px-4 md:px-[120px]">
-		<div class="grid gap-10 border border-gray-300 bg-gray-50 p-8 md:grid-cols-[1fr_460px] md:p-12">
+		<div class="grid gap-10 border border-gray-300 bg-white p-8 md:grid-cols-[1fr_460px] md:p-12">
 			<div class="text-left">
 				<h3 class="text-web-28 font-bold text-gray-900">{activeBusinessModel.heading}</h3>
 				<p class="mt-4 max-w-xl text-para-18 text-gray-600">{activeBusinessModel.description}</p>
@@ -488,8 +493,19 @@
      Industries page's "Different Industries. One Reliable Platform."
      section (same icons + mechanic), reused per explicit "we already done
      in previous pages just use it here" request. -->
-<section class="bg-white py-[160px]">
-	<div class="container-page text-center">
+<section class="relative overflow-hidden bg-white py-[160px]">
+	<img
+		src={teamsBgIconLeft}
+		alt=""
+		class="pointer-events-none absolute -left-24 -top-24 w-[420px] opacity-60"
+	/>
+	<img
+		src={teamsBgIconRight}
+		alt=""
+		class="pointer-events-none absolute -bottom-24 -right-24 w-[420px] opacity-60"
+	/>
+
+	<div class="container-page relative z-10 text-center">
 		<h2 class="mx-auto max-w-3xl text-web-32 font-semibold text-gray-800 sm:text-web-40 md:text-web-48">
 			Built For Businesses<br />That Plan Ahead
 		</h2>
@@ -500,7 +516,7 @@
 	</div>
 
 	<!-- Mobile/tablet (below lg:) — plain stacked list, no hover on touch. -->
-	<div class="mx-4 mt-20 sm:mx-8 lg:hidden">
+	<div class="relative z-10 mx-4 mt-20 sm:mx-8 lg:hidden">
 		{#each platformPillars as pillar, i (pillar.key)}
 			<div class="border border-gray-200 p-8 {i % 2 === 1 ? 'bg-gray-50' : 'bg-white'}">
 				<img src={pillar.icon} alt="" class="h-10 w-10" />
@@ -513,11 +529,14 @@
 	</div>
 
 	<!-- Desktop (lg: and up) — the interactive hover-flip/popup grid. -->
-	<div class="mx-4 mt-20 hidden border-l border-t border-gray-200 sm:mx-8 lg:mx-[200px] lg:block">
-		<div class="grid lg:grid-cols-2">
-			{#each platformPillars as pillar (pillar.key)}
+	<div class="relative z-10 mx-4 mt-20 hidden border-l border-t border-gray-200 sm:mx-8 lg:mx-[200px] lg:block">
+		<div class="grid bg-white lg:grid-cols-2">
+			{#each platformPillars as pillar, i (pillar.key)}
 				<div
-					class="group relative h-[320px] border-b border-r border-gray-200 p-8 transition-colors duration-500 ease-in-out hover:bg-blue-600"
+					class="group relative h-[320px] border-b border-r border-gray-200 p-8 transition-colors duration-500 ease-in-out hover:bg-blue-600 {i === 1 ||
+					i === 2
+						? 'bg-gray-50'
+						: 'bg-white'}"
 				>
 					<div
 						class="flex h-full flex-col justify-between transition-opacity duration-500 ease-in-out group-hover:opacity-0"
@@ -621,8 +640,8 @@
 <!-- "Solution FAQ" — same accordion mechanic as the Products/Industries FAQ
      sections, its own question set. -->
 <section class="bg-white py-[160px]">
-	<div class="mx-4 grid grid-cols-1 gap-16 lg:mx-[120px] lg:grid-cols-[1fr_800px] lg:items-start lg:gap-12">
-		<div>
+	<div class="mx-4 grid grid-cols-1 gap-16 lg:mx-[120px] lg:grid-cols-[1fr_800px] lg:items-stretch lg:gap-12">
+		<div class="flex flex-col">
 			<h2 class="text-web-32 font-semibold text-gray-900 sm:text-web-40 md:text-web-48">
 				Solution FAQ
 			</h2>
@@ -630,7 +649,11 @@
 				Choosing a payment platform is an important decision. Here are answers to the questions
 				businesses ask before getting started with ElixirPay.
 			</p>
-			<img src={faqIllustration} alt="" class="mt-10 hidden h-auto lg:block lg:w-96" />
+			<img
+				src={faqIllustration}
+				alt=""
+				class="mt-auto hidden h-auto translate-y-40 lg:block lg:w-[28rem]"
+			/>
 		</div>
 
 		<div class="rounded-2xl border border-gray-200">

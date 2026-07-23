@@ -15,6 +15,11 @@
 	const aboutRightIllustration = aboutIllustrationBase + 'right.png';
 	const sealLogo = aboutIllustrationBase + '3d%20elixirpay.png';
 
+	// Same oversized background icon pair as the home page's "Built Around
+	// Every Team" section, reused behind this section's heading.
+	const teamsBgIconLeft = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/elixir%20icon%201.svg';
+	const teamsBgIconRight = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/elixir%20icon%202.svg';
+
 	/** @type {HTMLImageElement | undefined} */
 	let sealEl = $state();
 	let sealStamped = $state(false);
@@ -557,8 +562,19 @@
 <!-- "Different Industries. One Reliable Platform." — same hover-popup grid
      as the home page's "Built Around Every Team" section, 2x2 instead of
      3x2 (see script comment above). -->
-<section class="bg-white py-[160px]">
-	<div class="container-page text-center">
+<section class="relative overflow-hidden bg-white py-[160px]">
+	<img
+		src={teamsBgIconLeft}
+		alt=""
+		class="pointer-events-none absolute -left-24 -top-24 w-[420px] opacity-60"
+	/>
+	<img
+		src={teamsBgIconRight}
+		alt=""
+		class="pointer-events-none absolute -bottom-24 -right-24 w-[420px] opacity-60"
+	/>
+
+	<div class="container-page relative z-10 text-center">
 		<h2 class="mx-auto max-w-3xl text-web-32 font-semibold text-gray-800 sm:text-web-40 md:text-web-48">
 			Different Industries. One<br />Reliable Platform.
 		</h2>
@@ -572,7 +588,7 @@
 
 	<!-- Mobile/tablet (below lg:) — same "show the backside to all" plain
 	     stacked list as the home page's team grid; no hover on touch. -->
-	<div class="mx-4 mt-20 sm:mx-8 lg:hidden">
+	<div class="relative z-10 mx-4 mt-20 sm:mx-8 lg:hidden">
 		{#each platformPillars as pillar, i (pillar.key)}
 			<div class="border border-gray-200 p-8 {i % 2 === 1 ? 'bg-gray-50' : 'bg-white'}">
 				<img src={pillar.icon} alt="" class="h-10 w-10" />
@@ -585,11 +601,14 @@
 	</div>
 
 	<!-- Desktop (lg: and up) — the interactive hover-flip/popup grid. -->
-	<div class="mx-4 mt-20 hidden border-l border-t border-gray-200 sm:mx-8 lg:mx-[200px] lg:block">
-		<div class="grid lg:grid-cols-2">
-			{#each platformPillars as pillar (pillar.key)}
+	<div class="relative z-10 mx-4 mt-20 hidden border-l border-t border-gray-200 sm:mx-8 lg:mx-[200px] lg:block">
+		<div class="grid bg-white lg:grid-cols-2">
+			{#each platformPillars as pillar, i (pillar.key)}
 				<div
-					class="group relative h-[320px] border-b border-r border-gray-200 p-8 transition-colors duration-500 ease-in-out hover:bg-blue-600"
+					class="group relative h-[320px] border-b border-r border-gray-200 p-8 transition-colors duration-500 ease-in-out hover:bg-blue-600 {i === 1 ||
+					i === 2
+						? 'bg-gray-50'
+						: 'bg-white'}"
 				>
 					<div
 						class="flex h-full flex-col justify-between transition-opacity duration-500 ease-in-out group-hover:opacity-0"
@@ -702,7 +721,11 @@
 				Choosing a payment platform is an important decision. Here are answers to the questions
 				businesses ask before getting started with ElixirPay.
 			</p>
-			<img src={faqIllustration} alt="" class="mt-auto hidden h-auto lg:block lg:w-96" />
+			<img
+				src={faqIllustration}
+				alt=""
+				class="mt-auto hidden h-auto translate-y-40 lg:block lg:w-[28rem]"
+			/>
 		</div>
 
 		<div class="rounded-2xl border border-gray-200">

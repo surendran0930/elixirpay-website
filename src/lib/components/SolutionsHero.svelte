@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SiteNav from './SiteNav.svelte';
-	import { FluidSimulation } from '$lib/motion-core';
+	import GridBeam from './GridBeam.svelte';
 
 	const dashboard = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Solutions/Dashboard.svg';
 </script>
@@ -14,13 +14,14 @@
 		style="background-image: linear-gradient(to bottom, #171717, #23223c, #2b2d64, #2f398f, #2c45bc, #2856d2, #1e68e9, #007aff, #0090ff, #00a2fe, #00b2f6, #00c0eb)"
 	></div>
 
-	<div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-[1200px] md:pointer-events-auto">
-		<FluidSimulation class="h-full w-full" />
+	<!-- Faint grid + animated corner beams over the gradient. -->
+	<div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-[1200px]">
+		<GridBeam class="h-full w-full" />
 	</div>
 
 	<SiteNav active="solutions" startTransparent />
 
-	<div class="relative z-10 h-[1200px] overflow-hidden">
+	<div class="pointer-events-none relative z-10 h-[1200px] overflow-hidden">
 		<div class="container-page pointer-events-none pt-[180px] text-center md:pt-[220px]">
 			<h1 class="mx-auto max-w-3xl text-web-32 font-semibold text-white sm:text-web-40 md:text-web-48 lg:text-web-56">
 				Solutions Built <br />Around Your Business

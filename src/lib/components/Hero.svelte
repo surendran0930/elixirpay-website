@@ -1,6 +1,6 @@
 <script lang="ts">
 	import SiteNav from './SiteNav.svelte';
-	import { FluidSimulation } from '$lib/motion-core';
+    import GridBeam from './GridBeam.svelte';
 
 	const dashboard =
 		'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Landing%20page%20assets/Section%201%20-%20Hero%20section/bashboard.png';
@@ -21,22 +21,10 @@
 		style="background-image: linear-gradient(to bottom, #171717, #23223c, #2b2d64, #2f398f, #2c45bc, #2856d2, #1e68e9, #007aff, #0090ff, #00a2fe, #00b2f6, #00c0eb)"
 	></div>
 
-	<!-- Interactive fluid layer — sits on top of the gradient but *below* the
-	     hero copy (z-0 vs z-10). The copy/dashboard wrappers are
-	     pointer-events-none (with pointer-events-auto restored on the actual
-	     CTAs) so pointer movement anywhere over the hero reaches this
-	     canvas and drives the simulation, instead of being swallowed by the
-	     big centered content containers. The component runs an automatic
-	     "preview" swirl until the first real pointer move.
-
-	     pointer-events-none below md: — the scene's touchmove handler
-	     preventDefault()s, which would stop the page from scrolling when a
-	     finger drags anywhere over the (viewport-tall) hero on phones. The
-	     ambient preview swirl still animates there; direct interaction is
-	     desktop/tablet-pointer only. -->
-	<div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-[1050px] md:pointer-events-auto">
-		<FluidSimulation class="h-full w-full" />
-	</div>
+	<!-- Faint grid + animated corner beams over the gradient. -->
+    <div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-[1050px]">
+        <GridBeam class="h-full w-full" />
+    </div>
 
 	<!-- Dark nav (hero-specific — inner pages use the light Nav component).
 	     `fixed` (not `sticky`) + `inset-x-0` on purpose: `sticky` only stays

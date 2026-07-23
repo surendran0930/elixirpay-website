@@ -9,17 +9,27 @@
 
 	let { children }: Props = $props();
 
-	// Landing, About, Products, Solutions, and Industries pages ship their
-	// own dark nav (same SiteNav, just starting transparent over their dark
-	// hero background) — skip the layout's copy on those routes only, so it
+	// Legal pages (Privacy, Terms, Refund, Cookies, Security, Compliance,
+	// PCI DSS, Responsible Disclosure) share the LegalHero banner, which
+	// ships its own dark nav the same way Landing/About/Products/Solutions/
+	// Industries do — skip the layout's copy on all of these routes so it
 	// isn't rendered twice.
-	let hasOwnNav = $derived(
-		$page.url.pathname === '/' ||
-			$page.url.pathname === '/about' ||
-			$page.url.pathname === '/products' ||
-			$page.url.pathname === '/solutions' ||
-			$page.url.pathname === '/industries'
-	);
+	const ownNavRoutes = [
+		'/',
+		'/about',
+		'/products',
+		'/solutions',
+		'/industries',
+		'/privacy',
+		'/terms',
+		'/refund',
+		'/cookies',
+		'/security',
+		'/compliance',
+		'/pci-dss',
+		'/responsible-disclosure'
+	];
+	let hasOwnNav = $derived(ownNavRoutes.includes($page.url.pathname));
 
 	let activeLink = $derived(
 		$page.url.pathname === '/products'

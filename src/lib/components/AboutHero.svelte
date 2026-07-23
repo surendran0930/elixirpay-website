@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import SiteNav from './SiteNav.svelte';
-	import { FluidSimulation } from '$lib/motion-core';
+	import GridBeam from './GridBeam.svelte';
 
 	const logomark = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/About%20us/logomark.svg';
 
@@ -62,8 +62,9 @@
 		style="background-image: linear-gradient(to bottom, #171717, #23223c, #2b2d64, #2f398f, #2c45bc, #2856d2, #1e68e9, #007aff, #0090ff, #00a2fe, #00b2f6, #00c0eb)"
 	></div>
 
-	<div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-[900px] md:pointer-events-auto">
-		<FluidSimulation class="h-full w-full" />
+	<!-- Faint grid + animated corner beams over the gradient. -->
+	<div class="pointer-events-none absolute inset-x-0 top-0 z-0 h-[900px]">
+		<GridBeam class="h-full w-full" />
 	</div>
 
 	<SiteNav active="about" startTransparent />

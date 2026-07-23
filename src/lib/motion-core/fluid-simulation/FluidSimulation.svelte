@@ -35,6 +35,12 @@
 		 * @default 10
 		 */
 		pressureIterations?: SceneProps["pressureIterations"];
+		/**
+		 * How strongly pointer movement is converted into fluid force. Lower
+		 * values give a calmer, more subdued effect.
+		 * @default 1.5
+		 */
+		forceScale?: SceneProps["forceScale"];
 
 		[key: string]: unknown;
 	}
@@ -42,10 +48,11 @@
 	let {
 		class: className = "",
 		dissipation = 0.950,
-		pointerSize = 0.0003,
+		pointerSize = 0.00016,
 		color = "#8ec9ff",
 		velocityDissipation = 0.96,
 		pressureIterations = 10,
+		forceScale = 1.5,
 		...rest
 	}: Props = $props();
 </script>
@@ -58,6 +65,7 @@
 			{color}
 			{velocityDissipation}
 			{pressureIterations}
+			{forceScale}
 		/>
 	</div>
 </div>

@@ -38,6 +38,13 @@
 		 * @default 10
 		 */
 		pressureIterations?: number;
+		/**
+		 * How strongly pointer movement is converted into fluid force. Lower
+		 * values give a calmer, more subdued effect; higher values make the
+		 * beam feel more dramatic/energetic.
+		 * @default 3
+		 */
+		forceScale?: number;
 	}
 
 	type PointerState = {
@@ -71,6 +78,7 @@
 		color = "#8ec9ff",
 		velocityDissipation = 0.96,
 		pressureIterations = 10,
+		forceScale = 3,
 	}: Props = $props();
 
 	let canvas = $state<HTMLCanvasElement>();
@@ -95,7 +103,7 @@
 	const pointerUv = new Vec2();
 	const splatColor = new Vec3();
 
-	const pointerForceClamp = 450;
+	const pointerForceClamp = 140;
 	const pointerForceInitialLerp = 0.2;
 	const pointerForceLerp = 0.55;
 
@@ -120,6 +128,7 @@
 			forceClamp: pointerForceClamp,
 			initialLerp: pointerForceInitialLerp,
 			lerp: pointerForceLerp,
+			forceScale,
 		});
 	};
 

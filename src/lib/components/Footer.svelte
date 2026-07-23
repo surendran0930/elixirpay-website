@@ -19,11 +19,24 @@
 
 	const certificates = [1, 2, 3, 4, 5].map((n) => footerAssetBase + `certificate%20${n}.png`);
 
-	// Only these 4 labels correspond to real routes in the app right now;
-	// everything else in the footer's ~35 links is a placeholder "#" until
-	// those pages actually exist.
+	// These labels correspond to real routes in the app; everything else in
+	// the footer's ~35 links is still a placeholder "#" until those pages
+	// actually exist.
 	/** @type {Record<string, string>} */
-	const realRoutes = { About: '/about', Careers: '/careers', Contact: '/contact', Blog: '/blog' };
+	const realRoutes = {
+		About: '/about',
+		Careers: '/careers',
+		Contact: '/contact',
+		Blog: '/blog',
+		Privacy: '/privacy',
+		Terms: '/terms',
+		Refund: '/refund',
+		Cookie: '/cookies',
+		Security: '/security',
+		Compliance: '/compliance',
+		'PCI DSS': '/pci-dss',
+		'Responsible Disclosure': '/responsible-disclosure'
+	};
 	/** @param {string} label */
 	const href = (label) => realRoutes[label] ?? '#';
 
@@ -171,14 +184,8 @@
 			</div>
 		</div>
 
-		<div
-			class="mt-8 flex flex-col gap-4 border-t border-white/10 pt-8 text-para-16 text-white/50 sm:flex-row sm:items-center sm:justify-between"
-		>
+		<div class="mt-8 border-t border-white/10 pt-8 text-center text-para-16 text-white/50">
 			<p>© Elixirpay, {new Date().getFullYear()}. All rights reserved.</p>
-			<div class="flex gap-8">
-				<a href="/privacy" class="hover:text-white">Privacy Policy</a>
-				<a href="/terms" class="hover:text-white">Terms &amp; Conditions</a>
-			</div>
 		</div>
 	</div>
 </footer>
