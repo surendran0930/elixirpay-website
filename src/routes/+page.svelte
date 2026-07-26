@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import Hero from '$lib/components/Hero.svelte';
+	import PageLoader from '$lib/components/PageLoader.svelte';
 
 	const assetBase =
 		'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Landing%20page%20assets/Section%202%20-%20About%20and%20social%20proffs/';
@@ -302,17 +303,12 @@
 	// placeholder heading/description text in the same voice, purely so the
 	// accordion has somewhere to expand to.
 	//
-	// The 8-industry lineup was changed per explicit user request: the
-	// original guess (E-commerce, NGO's, Logistics, Manufacturing,
-	// Education, Healthcare, Travel, Retail) is replaced by a confirmed
-	// list — E-commerce, Healthcare, Education, Travel, Finance, SaaS,
-	// Retail, NGO. Logistics and Manufacturing are gone entirely (not kept
-	// alongside the new list); their card images (LOGISTICS.png,
-	// MANUFACTURING.png) are now unused. Finance and SaaS are brand new
-	// entries with **no card image asset** — see the `image` field being
-	// absent on those two, and the template's `{#if industry.image}` guard
-	// that falls back to the gradient/label treatment instead of a broken
-	// <img> when it's missing.
+	// 8-industry lineup: E-commerce, Healthcare, Education, Travel,
+	// Logistics, Manufacturing, Retail, NGO — each has its own card image
+	// asset. The template's `{#if industry.image}` guard still falls back
+	// to the gradient/label treatment for any future entry added without
+	// one, so that path isn't dead code even though every current entry
+	// has an image.
 	const industriesImageBase =
 		'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Landing%20page%20assets/Section%204%20-%20Payments%20Infrastructure%20/';
 	const industries = [
@@ -334,7 +330,7 @@
 			description:
 				'Accept patient payments and insurance settlements securely, with billing your care teams can trust.',
 			cta: 'Learn More',
-			image: industriesImageBase + 'HEALTHCARE.png'
+			image: 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/HEALTHCARE.png'
 		},
 		{
 			key: 'education',
@@ -354,7 +350,7 @@
 			description:
 				'Handle multi-currency bookings and refunds smoothly, so travelers can pay however suits them best.',
 			cta: 'Learn More',
-			image: industriesImageBase + 'TRAVEL.png'
+			image: 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/TRAVEL.png'
 		},
 		{
 			key: 'logistics',
@@ -367,14 +363,14 @@
 			image: industriesImageBase + 'LOGISTICS.png'
 		},
 		{
-			key: 'logistics-2',
-			label: 'Logistics',
-			gradient: 'from-blue-100 to-blue-200',
-			heading: 'Logistics',
+			key: 'manufacturing',
+			label: 'Manufacturing',
+			gradient: 'from-teal-100 to-teal-200',
+			heading: 'Manufacturing',
 			description:
-				'Automate subscription billing and recurring revenue so your product team can focus on shipping.',
+				'Manage supplier payments and production costs with reconciliation built for complex, multi-vendor supply chains.',
 			cta: 'Learn More',
-			image: industriesImageBase + 'LOGISTICS.png'
+			image: 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/MANUFACTURING.png'
 		},
 		{
 			key: 'retail',
@@ -528,13 +524,13 @@
 		}
 	];
 
-	// Testimonial — only the Cisco/Anantha Krishnan slot has real quote
+	// Testimonial — only the Cisco/Aarav Advik slot has real quote
 	// copy; the other 4 slots are still placeholder name/quote text purely
 	// so the 5-avatar carousel has something to page through — don't treat
 	// their name/quote as final. All 5 avatar photos are real, but they had
 	// to be reassigned after actually downloading and viewing each file:
 	// the filename order does NOT match the reference screenshot's visual
-	// order (`Image 1.png` is the man/Anantha Krishnan, not `image 3.png`
+	// order (`Image 1.png` is the man/Aarav Advik, not `image 3.png`
 	// as first assumed from the screenshot's left-to-right layout alone —
 	// don't re-guess avatar↔testimonial pairing from a screenshot again,
 	// always fetch and look at the actual file). Real mapping:
@@ -561,7 +557,7 @@
 				'Elixirpay transformed our cross-border collections— FIRC generation that once took',
 			quoteRest:
 				'up to five days now takes just seconds with the MoneySaver Exporter Account.',
-			name: 'Anantha Krishnan',
+			name: 'Aarav Advik',
 			role: 'Founder & CEO'
 		},
 		{
@@ -737,6 +733,11 @@
 <svelte:head>
 	<title>ElixirPay — Payment Infrastructure Built for Growth</title>
 </svelte:head>
+
+<!-- One-time splash screen, on top of everything below it — the page
+     mounts and renders normally underneath the whole time, this just
+     covers it until the load animation finishes and fades away. -->
+<PageLoader />
 
 <!-- Section order per Section 4 / Section 12 spec:
      Hero → About & Social proof → Solutions → Services → Growth →
@@ -1224,7 +1225,7 @@
 						: 'opacity-100'}"
 					onclick={() => (activeIndustryIndex = i)}
 				>
-					<span class="font-mono text-para-16 font-semibold uppercase tracking-widest text-white">
+					<span class="font-mono text-para-16 font-semibold uppercase tracking-widest text-gray-800/80">
 						{industry.label}
 					</span>
 				</button>

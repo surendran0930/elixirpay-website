@@ -317,6 +317,35 @@
 		);
 	}
 
+	// Click-to-jump — lets a milestone be selected directly instead of only
+	// ever advancing by scrolling. This doesn't introduce a second source of
+	// truth: it just programmatically scrolls the window to the point in the
+	// 400vh runway whose progress lands in that milestone's bucket center,
+	// so the existing scroll listener (updateLoaderProgress) picks it up and
+	// activeStage updates exactly as it would from a real scroll.
+	/** @param {number} index */
+	function goToStage(index) {
+		if (!roadmapWrapperEl) return;
+		const rect = roadmapWrapperEl.getBoundingClientRect();
+		const scrollRange = rect.height - window.innerHeight;
+		if (scrollRange <= 0) return;
+		const absoluteTop = rect.top + window.scrollY;
+		const targetProgress = (index + 0.5) / milestones.length;
+		window.scrollTo({ top: absoluteTop + targetProgress * scrollRange, behavior: 'smooth' });
+	}
+
+	// Same click-to-jump as the milestone labels below, but on the bar
+	// itself — clicking anywhere along its width jumps to whichever quarter
+	// (milestone) that point falls in, like a seekable progress bar.
+	/** @param {MouseEvent} e */
+	function handleTrackClick(e) {
+		const target = /** @type {HTMLElement} */ (e.currentTarget);
+		const rect = target.getBoundingClientRect();
+		const fraction = (e.clientX - rect.left) / rect.width;
+		const index = Math.min(milestones.length - 1, Math.max(0, Math.floor(fraction * milestones.length)));
+		goToStage(index);
+	}
+
 	// "Our Approach" pin-and-step reveal — same mechanic as the roadmap
 	// loader above: approachWrapperEl is a tall (500vh) container, the
 	// section inside it is `sticky top-0 h-screen`, and that runway is
@@ -518,14 +547,19 @@
 				<!-- Outer "shade" — a slightly lighter card wrapping the bar itself,
 				     rounded-[30px], distinct from the bar's own rounded-[24px] so
 				     the two radii read as two nested layers rather than one shape. -->
-				<div class="rounded-[30px] bg-[#2D2D2D] p-3 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)]">
+				<button
+					type="button"
+					aria-label="Jump to a milestone along the roadmap"
+					class="block w-full cursor-pointer rounded-[30px] bg-[#2D2D2D] p-3 text-left shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)]"
+					onclick={handleTrackClick}
+				>
 					<div class="relative h-20 overflow-hidden rounded-[24px] bg-[#474646] sm:h-24">
 						<div
 							class="progress-stripes absolute inset-y-0 left-0 bg-[#0879E9] transition-[width] duration-500 ease-out"
 							style="width: {loaderTargetPercent}%"
 						></div>
 					</div>
-				</div>
+				</button>
 
 				<div
 					class="absolute top-full flex -translate-x-1/2 flex-col items-center transition-[left] duration-500 ease-out"
@@ -560,8 +594,22 @@
 					     (which only moves horizontally, matching whichever heading is
 					     active) had no consistent row to sit above vertically. On
 					     desktop's 4-column row this restriction is lifted (sm:block)
-					     since all 4 sit at the same vertical level there. -->
-					<div class={index === activeStage ? '' : 'hidden sm:block'}>
+					     since all 4 sit at the same vertical level there.
+
+					     A real button element (not a div+role hack) on top of the
+					     scroll-driven reveal — lets someone jump straight to a
+					     milestone instead of only ever scrolling to it; see goToStage
+					     above. text-center/sm:text-left repeats the grid's own
+					     alignment since buttons default to center-aligned text,
+					     overriding the inherited value. -->
+					<button
+						type="button"
+						class="block w-full cursor-pointer rounded-lg text-center transition-opacity hover:opacity-80 sm:text-left {index ===
+						activeStage
+							? ''
+							: 'hidden sm:block'}"
+						onclick={() => goToStage(index)}
+					>
 						<p
 							class="text-web-28 uppercase transition-colors duration-300 {index === activeStage
 								? 'font-bold text-white'
@@ -577,7 +625,7 @@
 						>
 							{milestone.label[0]}<br />{milestone.label[1]}
 						</p>
-					</div>
+					</button>
 				{/each}
 			</div>
 		</div>

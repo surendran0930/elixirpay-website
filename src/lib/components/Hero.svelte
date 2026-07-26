@@ -15,7 +15,7 @@
      white, which is what actually produces the floating/overflow look —
      more reliable than stretching a background across a negative-margin
      overflow, which made the crop point unpredictable. -->
-<section class="relative bg-white">
+<section class="relative overflow-x-hidden bg-white">
 	<div
 		class="absolute inset-x-0 top-0 z-0 h-[1050px]"
 		style="background-image: linear-gradient(to bottom, #171717, #23223c, #2b2d64, #2f398f, #2c45bc, #2856d2, #1e68e9, #007aff, #0090ff, #00a2fe, #00b2f6, #00c0eb)"

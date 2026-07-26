@@ -2,7 +2,7 @@
 	import SiteNav from './SiteNav.svelte';
 	import GridBeam from './GridBeam.svelte';
 
-	const dashboard = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Solutions/Dashboard.svg';
+	const dashboard = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/solutions.svg';
 </script>
 
 <!-- Same banner as ProductsHero.svelte/IndustriesHero.svelte, reused

@@ -53,7 +53,7 @@
 </script>
 
 <header
-	class="fixed inset-x-0 z-30 mx-auto flex items-center justify-between transition-all duration-300 {scrolled
+	class="fixed inset-x-0 z-30 mx-auto flex items-center justify-between transition-[top,width,padding,border-radius,background-color,box-shadow] duration-300 {scrolled
 		? 'top-4 w-[calc(100%-2rem)] max-w-5xl rounded-full bg-black/90 px-6 py-3 shadow-xl shadow-black/30 backdrop-blur-md sm:w-[calc(100%-4rem)]'
 		: 'container-page top-0 py-8'}"
 >
@@ -61,7 +61,7 @@
 		<img
 			src={logo}
 			alt="ElixirPay"
-			class="w-auto transition-all duration-300 {scrolled ? 'h-9' : 'h-9 md:h-[72px]'}"
+			class="w-auto {scrolled ? 'h-9' : 'h-9 md:h-[72px]'}"
 		/>
 	</a>
 

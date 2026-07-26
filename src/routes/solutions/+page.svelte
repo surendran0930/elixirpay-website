@@ -197,7 +197,7 @@
 			quoteHighlight:
 				'Elixirpay transformed our cross-border collections— FIRC generation that once took',
 			quoteRest: 'up to five days now takes just seconds with the MoneySaver Exporter Account.',
-			name: 'Anantha Krishnan',
+			name: 'Aarav Advik',
 			role: 'Founder & CEO'
 		},
 		{
