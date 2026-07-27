@@ -1,22 +1,20 @@
-// import adapter from '@sveltejs/adapter-netlify';
-// import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+import adapter from '@sveltejs/adapter-static';
+import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-// /** @type {import('@sveltejs/kit').Config} */
-// const config = {
-// 	preprocess: vitePreprocess(),
-// 	kit: {
-// 		adapter: adapter({
-// 			edge: false,
-// 			split: false
-// 		})
-// 	}
-// };
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
+	preprocess: vitePreprocess(),
 
-// export default config;
-import adapter from '@sveltejs/adapter-netlify';
-
-export default {
-  kit: {
-    adapter: adapter()
-  }
+	kit: {
+		adapter: adapter({
+			pages: 'build',
+			assets: 'build',
+			fallback: 'index.html'
+		}),
+		prerender: {
+			handleHttpError: 'warn'
+		}
+	}
 };
+
+export default config;

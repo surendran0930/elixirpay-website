@@ -754,13 +754,13 @@
 	<img
 		src={aboutLeftIllustration}
 		alt=""
-		class="illustration-float pointer-events-none absolute left-0 top-0 h-auto w-24 sm:w-32 lg:w-64"
+		class="illustration-float pointer-events-none absolute left-0 top-0 h-auto w-24 sm:w-32 lg:w-40 xl:w-64"
 		style="animation-duration: 2s;"
 	/>
 	<img
 		src={aboutRightIllustration}
 		alt=""
-		class="illustration-float pointer-events-none absolute right-0 top-0 h-auto w-24 sm:w-32 lg:w-64"
+		class="illustration-float pointer-events-none absolute right-0 top-0 h-auto w-24 sm:w-32 lg:w-40 xl:w-64"
 		style="animation-duration: 2s; animation-delay: -1s;"
 	/>
 
@@ -1035,7 +1035,9 @@
 											<span>{item.description}</span>
 										</p>
 										<a
-											href="/products"
+											href="/products?category={encodeURIComponent(
+												category.label
+											)}&item={encodeURIComponent(item.label)}"
 											class="mt-5 inline-block rounded-lg bg-gray-200 px-5 py-2.5 font-mono text-para-14 font-medium text-gray-900 hover:bg-gray-300"
 										>
 											{item.cta ?? item.heading}
@@ -1147,7 +1149,9 @@
 					<h3 class="text-web-26 font-bold text-gray-900">{activeItem.heading}</h3>
 					<p class="mt-4 text-para-18 text-gray-500">{activeItem.description}</p>
 					<a
-						href="/products"
+						href="/products?category={encodeURIComponent(
+							activeCategory.label
+						)}&item={encodeURIComponent(activeItem.label)}"
 						class="mt-8 inline-flex items-center gap-1.5 rounded-lg bg-gray-100 px-5 py-2.5 font-mono text-para-16 font-medium text-gray-900 hover:bg-gray-200"
 					>
 						{activeItem.cta ?? activeItem.heading}

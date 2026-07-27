@@ -1,53 +1,6 @@
-import { g as getContext, a as attr, b as attr_class, c as ensure_array_like, e as escape_html, u as unsubscribe_stores, d as derived, f as store_get } from "../../chunks/index.js";
-import "clsx";
-import "@sveltejs/kit/internal";
-import "../../chunks/exports.js";
-import "../../chunks/utils2.js";
-import "@sveltejs/kit/internal/server";
-import "../../chunks/root.js";
-import "../../chunks/state.svelte.js";
-import { B as Button } from "../../chunks/Button.js";
-const getStores = () => {
-  const stores$1 = getContext("__svelte__");
-  return {
-    /** @type {typeof page} */
-    page: {
-      subscribe: stores$1.page.subscribe
-    },
-    /** @type {typeof navigating} */
-    navigating: {
-      subscribe: stores$1.navigating.subscribe
-    },
-    /** @type {typeof updated} */
-    updated: stores$1.updated
-  };
-};
-const page = {
-  subscribe(fn) {
-    const store = getStores().page;
-    return store.subscribe(fn);
-  }
-};
-function Nav($$renderer) {
-  const logo = "https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Landing%20page%20assets/Nav%20bar/elixirpaylogo.svg";
-  $$renderer.push(`<header class="container-page sticky top-0 z-30 flex items-center justify-between bg-white py-6"><a href="/" class="inline-flex items-center rounded-lg bg-gray-900 px-4 py-2"><img${attr("src", logo)} alt="ElixirPay" class="h-16 w-auto"/></a> <nav class="hidden md:flex items-center gap-8"><a href="/about" class="text-para-16 hover:text-blue-500">About Us</a> <a href="/services" class="text-para-16 hover:text-blue-500">Services</a> <a href="/careers" class="text-para-16 hover:text-blue-500">Careers</a> <a href="/blog" class="text-para-16 hover:text-blue-500">Blog</a> <a href="/contact" class="text-para-16 hover:text-blue-500">Contact</a></nav> <div class="hidden md:block">`);
-  Button($$renderer, {
-    color: "blue",
-    variant: "solid",
-    children: ($$renderer2) => {
-      $$renderer2.push(`<!---->Get Started`);
-    }
-  });
-  $$renderer.push(`<!----></div> <button class="md:hidden" aria-label="Open menu">☰</button></header> <div${attr_class(`fixed inset-0 z-40 bg-black/40 transition-opacity duration-300 md:hidden ${"pointer-events-none opacity-0"}`)} role="presentation"></div> <aside${attr_class(`fixed inset-y-0 right-0 z-50 flex w-72 max-w-[80%] transform flex-col gap-6 border-l border-gray-200 bg-white p-6 text-gray-900 shadow-2xl transition-transform duration-300 ease-in-out md:hidden ${"translate-x-full"}`)}><div class="flex items-center justify-between"><span class="text-web-16 font-semibold">Menu</span> <button aria-label="Close menu">✕</button></div> <nav class="flex flex-col gap-4 text-para-16"><a href="/about">About Us</a> <a href="/services">Services</a> <a href="/careers">Careers</a> <a href="/blog">Blog</a> <a href="/contact">Contact</a></nav> <div class="mt-auto" role="presentation">`);
-  Button($$renderer, {
-    color: "blue",
-    variant: "solid",
-    children: ($$renderer2) => {
-      $$renderer2.push(`<!---->Get Started`);
-    }
-  });
-  $$renderer.push(`<!----></div></aside>`);
-}
+import { a as attr, b as ensure_array_like, e as escape_html, d as derived, s as store_get, u as unsubscribe_stores } from "../../chunks/index.js";
+import { p as page } from "../../chunks/stores.js";
+import { S as SiteNav } from "../../chunks/SiteNav.js";
 function Footer($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     const footerAssetBase = "https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/Landing%20page%20assets/section%2011%20-%20footer/";
@@ -77,11 +30,24 @@ function Footer($$renderer, $$props) {
     const certificates = [1, 2, 3, 4, 5].map((n) => footerAssetBase + `certificate%20${n}.png`);
     const realRoutes = {
       About: "/about",
-      Careers: "/careers",
+      Careers: "/coming-soon",
       Contact: "/contact",
-      Blog: "/blog"
+      Blog: "/coming-soon",
+      Privacy: "/privacy",
+      Terms: "/terms",
+      Refund: "/refund",
+      Cookie: "/cookies",
+      Security: "/security",
+      Compliance: "/compliance",
+      "PCI DSS": "/pci-dss",
+      "Responsible Disclosure": "/responsible-disclosure"
     };
-    const href = (label) => realRoutes[label] ?? "#";
+    const sectionRoutes = {
+      Products: "/products",
+      Solutions: "/solutions",
+      Industries: "/industries"
+    };
+    const href = (label, section) => realRoutes[label] ?? (section && sectionRoutes[section]) ?? "#";
     const footerColumnsRow1 = [
       {
         title: "Products",
@@ -94,9 +60,7 @@ function Footer($$renderer, $$props) {
           "Subscriptions",
           "Payouts",
           "Virtual Accounts",
-          "Smart Collect",
           "Reconciliation",
-          "Tokenization",
           "White Label Solutions"
         ]
       },
@@ -146,7 +110,8 @@ function Footer($$renderer, $$props) {
         links: ["API", "SDK", "Guides", "Sandbox"]
       }
     ];
-    $$renderer2.push(`<footer class="bg-[#171717] py-20 text-white"><div class="mx-4 lg:mx-[120px]"><div class="grid grid-cols-1 gap-16 lg:grid-cols-[320px_1fr] lg:gap-32"><div><img${attr("src", logo)} alt="ElixirPay" class="h-16 w-auto"/> <p class="mt-6 max-w-xs text-para-16 text-white/50">Get started with DOSS ARP and see how composable operations can work for your business.</p> <a href="/contact" class="mt-6 inline-block rounded-lg border border-white/20 px-5 py-2.5 font-mono text-para-14 font-medium text-white hover:bg-white/5">Get Started</a> <div class="mt-16 flex items-center gap-5"><!--[-->`);
+    $$renderer2.push(`<footer class="bg-[#171717] py-20 text-white"><div class="mx-4 lg:mx-[120px]"><div class="grid grid-cols-1 gap-16 lg:grid-cols-[320px_1fr] lg:gap-32"><div><img${attr("src", logo)} alt="ElixirPay" class="h-16 w-auto"/> <p class="mt-6 max-w-xs text-para-16 text-white/50">Get started with ElixirPay and see how composable payment operations can work for your
+					business.</p> <a href="/contact" class="mt-6 inline-block rounded-lg border border-white/20 px-5 py-2.5 font-mono text-para-14 font-medium text-white hover:bg-white/5">Get Started</a> <div class="mt-16 flex items-center gap-5"><!--[-->`);
     const each_array = ensure_array_like(socialLinks);
     for (let $$index = 0, $$length = each_array.length; $$index < $$length; $$index++) {
       let social = each_array[$$index];
@@ -160,7 +125,7 @@ function Footer($$renderer, $$props) {
       const each_array_2 = ensure_array_like(column.links);
       for (let $$index_1 = 0, $$length2 = each_array_2.length; $$index_1 < $$length2; $$index_1++) {
         let link = each_array_2[$$index_1];
-        $$renderer2.push(`<li><a${attr("href", href(link))} class="hover:text-white">${escape_html(link)}</a></li>`);
+        $$renderer2.push(`<li><a${attr("href", href(link, column.title))} class="hover:text-white">${escape_html(link)}</a></li>`);
       }
       $$renderer2.push(`<!--]--></ul></div>`);
     }
@@ -182,17 +147,34 @@ function Footer($$renderer, $$props) {
       let cert = each_array_5[$$index_5];
       $$renderer2.push(`<img${attr("src", cert)} alt="" class="h-10 w-auto"/>`);
     }
-    $$renderer2.push(`<!--]--></div></div> <div class="mt-8 flex flex-col gap-4 border-t border-white/10 pt-8 text-para-16 text-white/50 sm:flex-row sm:items-center sm:justify-between"><p>© Elixirpay, ${escape_html((/* @__PURE__ */ new Date()).getFullYear())}. All rights reserved.</p> <div class="flex gap-8"><a href="/privacy" class="hover:text-white">Privacy Policy</a> <a href="/terms" class="hover:text-white">Terms &amp; Conditions</a></div></div></div></footer>`);
+    $$renderer2.push(`<!--]--></div></div> <div class="mt-8 border-t border-white/10 pt-8 text-center text-para-16 text-white/50"><p>© Elixirpay, ${escape_html((/* @__PURE__ */ new Date()).getFullYear())}. All rights reserved.</p></div></div></footer>`);
   });
 }
 function _layout($$renderer, $$props) {
   $$renderer.component(($$renderer2) => {
     var $$store_subs;
     let { children } = $$props;
-    let isLanding = derived(() => store_get($$store_subs ??= {}, "$page", page).url.pathname === "/");
-    if (!isLanding()) {
+    const ownNavRoutes = [
+      "/",
+      "/about",
+      "/products",
+      "/solutions",
+      "/industries",
+      "/coming-soon",
+      "/privacy",
+      "/terms",
+      "/refund",
+      "/cookies",
+      "/security",
+      "/compliance",
+      "/pci-dss",
+      "/responsible-disclosure"
+    ];
+    let hasOwnNav = derived(() => ownNavRoutes.includes(store_get($$store_subs ??= {}, "$page", page).url.pathname));
+    let activeLink = derived(() => store_get($$store_subs ??= {}, "$page", page).url.pathname === "/products" ? "products" : store_get($$store_subs ??= {}, "$page", page).url.pathname === "/solutions" ? "solutions" : store_get($$store_subs ??= {}, "$page", page).url.pathname === "/industries" ? "industries" : void 0);
+    if (!hasOwnNav()) {
       $$renderer2.push("<!--[0-->");
-      Nav($$renderer2);
+      SiteNav($$renderer2, { active: activeLink() });
     } else {
       $$renderer2.push("<!--[-1-->");
     }

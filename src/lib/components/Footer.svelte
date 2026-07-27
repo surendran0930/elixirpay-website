@@ -25,9 +25,9 @@
 	/** @type {Record<string, string>} */
 	const realRoutes = {
 		About: '/about',
-		Careers: '/careers',
+		Careers: '/coming-soon',
 		Contact: '/contact',
-		Blog: '/blog',
+		Blog: '/coming-soon',
 		Privacy: '/privacy',
 		Terms: '/terms',
 		Refund: '/refund',
@@ -37,8 +37,19 @@
 		'PCI DSS': '/pci-dss',
 		'Responsible Disclosure': '/responsible-disclosure'
 	};
-	/** @param {string} label */
-	const href = (label) => realRoutes[label] ?? '#';
+	// Products/Solutions/Industries links all point at their shared
+	// overview page rather than individual (non-existent) sub-pages.
+	/** @type {Record<string, string>} */
+	const sectionRoutes = {
+		Products: '/products',
+		Solutions: '/solutions',
+		Industries: '/industries'
+	};
+	/**
+	 * @param {string} label
+	 * @param {string} [section]
+	 */
+	const href = (label, section) => realRoutes[label] ?? (section && sectionRoutes[section]) ?? '#';
 
 	const footerColumnsRow1 = [
 		{
@@ -52,9 +63,7 @@
 				'Subscriptions',
 				'Payouts',
 				'Virtual Accounts',
-				'Smart Collect',
 				'Reconciliation',
-				'Tokenization',
 				'White Label Solutions'
 			]
 		},
@@ -134,7 +143,9 @@
 							<p class="text-web-20 font-semibold text-white">{column.title}</p>
 							<ul class="mt-5 space-y-3 text-para-16 text-white/50">
 								{#each column.links as link}
-									<li><a href={href(link)} class="hover:text-white">{link}</a></li>
+									<li>
+										<a href={href(link, column.title)} class="hover:text-white">{link}</a>
+									</li>
 								{/each}
 							</ul>
 						</div>

@@ -20,6 +20,7 @@
 		'/products',
 		'/solutions',
 		'/industries',
+		'/coming-soon',
 		'/privacy',
 		'/terms',
 		'/refund',

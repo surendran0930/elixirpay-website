@@ -81,7 +81,7 @@
 				href="/products"
 				class="pointer-events-auto w-full rounded-lg bg-white px-5 py-4 text-center font-mono text-para-16 font-medium text-black hover:bg-gray-100 sm:w-auto sm:px-8"
 			>
-				View Documentation
+				Explore our products
 			</a>
 		</div>
 	</div>

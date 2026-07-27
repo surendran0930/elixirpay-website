@@ -532,7 +532,7 @@
      component has to detect and trigger. -->
 <div bind:this={roadmapWrapperEl} class="relative h-[400vh] bg-black">
 	<section
-		class="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden bg-black text-center text-white"
+		class="sticky top-0 flex h-screen flex-col items-center overflow-hidden bg-black pt-24 text-center text-white [@media(min-height:820px)]:justify-center [@media(min-height:820px)]:pt-0"
 	>
 		<div class="container-page relative z-10">
 			<h2 class="mx-auto max-w-2xl text-web-32 font-semibold sm:text-web-40 md:text-web-48">
@@ -673,7 +673,7 @@
 		     (barely offset, meant only to "peek out" a few px) overlapped
 		     into unreadable text. -->
 		<div class="container-page relative z-10 mt-8 w-full">
-			<div class="relative mx-auto aspect-[4/5] max-w-3xl md:aspect-[950/482]">
+			<div class="relative mx-auto aspect-[4/5] max-w-xl md:aspect-[950/482] md:max-w-3xl">
 				{#each approachCards as card, i}
 					{@const stepsBehind = Math.max(0, activeCardStage - i)}
 					{@const notYetArrived = i > activeCardStage}

@@ -29,7 +29,7 @@ declare module "$app/types" {
 	type MatcherParam<M> = M extends (param : string) => param is (infer U extends string) ? U : string;
 
 	export interface AppTypes {
-		RouteId(): "/" | "/about" | "/blog" | "/careers" | "/compliance" | "/contact" | "/cookies" | "/industries" | "/pci-dss" | "/privacy" | "/products" | "/refund" | "/responsible-disclosure" | "/security" | "/solutions" | "/terms";
+		RouteId(): "/" | "/about" | "/blog" | "/careers" | "/coming-soon" | "/compliance" | "/contact" | "/cookies" | "/industries" | "/pci-dss" | "/privacy" | "/products" | "/refund" | "/responsible-disclosure" | "/security" | "/solutions" | "/terms";
 		RouteParams(): {
 			
 		};
@@ -38,6 +38,7 @@ declare module "$app/types" {
 			"/about": Record<string, never>;
 			"/blog": Record<string, never>;
 			"/careers": Record<string, never>;
+			"/coming-soon": Record<string, never>;
 			"/compliance": Record<string, never>;
 			"/contact": Record<string, never>;
 			"/cookies": Record<string, never>;
@@ -51,7 +52,7 @@ declare module "$app/types" {
 			"/solutions": Record<string, never>;
 			"/terms": Record<string, never>
 		};
-		Pathname(): "/" | "/about" | "/blog" | "/careers" | "/compliance" | "/contact" | "/cookies" | "/industries" | "/pci-dss" | "/privacy" | "/products" | "/refund" | "/responsible-disclosure" | "/security" | "/solutions" | "/terms";
+		Pathname(): "/" | "/about" | "/blog" | "/careers" | "/coming-soon" | "/compliance" | "/contact" | "/cookies" | "/industries" | "/pci-dss" | "/privacy" | "/products" | "/refund" | "/responsible-disclosure" | "/security" | "/solutions" | "/terms";
 		ResolvedPathname(): `${"" | `/${string}`}${ReturnType<AppTypes['Pathname']>}`;
 		Asset(): string & {};
 	}

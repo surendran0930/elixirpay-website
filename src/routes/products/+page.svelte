@@ -1,5 +1,6 @@
 <script>
 	import { slide } from 'svelte/transition';
+	import { page } from '$app/stores';
 	import ProductsHero from '$lib/components/ProductsHero.svelte';
 
 	// FAQ illustration — same asset reused on every FAQ section site-wide.
@@ -296,8 +297,23 @@
 		}
 	];
 
-	let activeCategoryIndex = $state(0);
-	let activeItemIndex = $state(0);
+	// Deep-links from the home page's mega menu ("Explore Payment Gateway"
+	// etc.) pass ?category=&item= query params so this page opens directly
+	// on the matching tab instead of always defaulting to the first one.
+	function initialIndices() {
+		const categoryParam = $page.url.searchParams.get('category');
+		const itemParam = $page.url.searchParams.get('item');
+		const categoryIndex = solutionCategories.findIndex((c) => c.label === categoryParam);
+		if (categoryIndex === -1) return { categoryIndex: 0, itemIndex: 0 };
+		const itemIndex = solutionCategories[categoryIndex].items.findIndex(
+			(i) => i.label === itemParam
+		);
+		return { categoryIndex, itemIndex: itemIndex === -1 ? 0 : itemIndex };
+	}
+	const { categoryIndex: initialCategoryIndex, itemIndex: initialItemIndex } = initialIndices();
+
+	let activeCategoryIndex = $state(initialCategoryIndex);
+	let activeItemIndex = $state(initialItemIndex);
 	let activeCategory = $derived(solutionCategories[activeCategoryIndex]);
 	let activeItem = $derived(activeCategory.items[activeItemIndex]);
 

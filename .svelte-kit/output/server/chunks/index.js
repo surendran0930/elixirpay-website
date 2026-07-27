@@ -64,6 +64,15 @@ function deferred() {
   });
   return { promise, resolve, reject };
 }
+function fallback(value, fallback2, lazy = false) {
+  return value === void 0 ? lazy ? (
+    /** @type {() => V} */
+    fallback2()
+  ) : (
+    /** @type {V} */
+    fallback2
+  ) : value;
+}
 function equals(value) {
   return value === this.v;
 }
@@ -72,6 +81,11 @@ function safe_not_equal(a, b) {
 }
 function safe_equals(value) {
   return !safe_not_equal(value, this.v);
+}
+function invalid_default_snippet() {
+  {
+    throw new Error(`https://svelte.dev/e/invalid_default_snippet`);
+  }
 }
 function lifecycle_outside_component(name) {
   {
@@ -494,6 +508,7 @@ function defer_effect(effect, dirty_effects, maybe_dirty_effects) {
 function subscribe_to_store(store, run, invalidate) {
   if (store == null) {
     run(void 0);
+    if (invalidate) invalidate(void 0);
     return noop;
   }
   const unsub = untrack(
@@ -3264,6 +3279,38 @@ function unsubscribe_stores(store_values) {
     store_values[store_name][1]();
   }
 }
+function slot(renderer, $$props, name, slot_props, fallback_fn) {
+  var slot_fn = $$props.$$slots?.[name];
+  if (slot_fn === true) {
+    slot_fn = $$props["children"];
+  }
+  if (slot_fn !== void 0) {
+    slot_fn(renderer, slot_props);
+  }
+}
+function rest_props(props, rest) {
+  const rest_props2 = {};
+  let key;
+  for (key of Object.keys(props)) {
+    if (!rest.includes(key)) {
+      rest_props2[key] = props[key];
+    }
+  }
+  return rest_props2;
+}
+function sanitize_props(props) {
+  const { children, $$slots, ...sanitized } = props;
+  return sanitized;
+}
+function bind_props(props_parent, props_now) {
+  for (const key of Object.keys(props_now)) {
+    const initial_value = props_parent[key];
+    const value = props_now[key];
+    if (initial_value === void 0 && value !== void 0 && Object.getOwnPropertyDescriptor(props_parent, key)?.set) {
+      props_parent[key] = value;
+    }
+  }
+}
 function ensure_array_like(array_like_or_iterator) {
   if (array_like_or_iterator) {
     return array_like_or_iterator.length !== void 0 ? array_like_or_iterator : Array.from(array_like_or_iterator);
@@ -3294,73 +3341,81 @@ function derived(fn) {
   };
 }
 export {
-  component_root as $,
-  pause_effect as A,
+  get_first_child as $,
+  block as A,
   BOUNDARY_EFFECT as B,
   COMMENT_NODE as C,
-  current_batch as D,
-  move_effect as E,
-  defer_effect as F,
-  set_active_effect as G,
+  branch as D,
+  create_text as E,
+  pause_effect as F,
+  current_batch as G,
   HYDRATION_ERROR as H,
-  set_active_reaction as I,
-  set_component_context as J,
-  Batch as K,
-  handle_error as L,
-  active_reaction as M,
-  component_context as N,
-  internal_set as O,
-  destroy_effect as P,
-  invoke_error_boundary as Q,
-  svelte_boundary_reset_onerror as R,
-  HYDRATION_START_FAILED as S,
-  svelte_boundary_reset_noop as T,
-  EFFECT_TRANSPARENT as U,
-  EFFECT_PRESERVED as V,
-  define_property as W,
-  init_operations as X,
-  get_first_child as Y,
-  hydration_failed as Z,
-  clear_text_content as _,
+  move_effect as I,
+  defer_effect as J,
+  set_active_effect as K,
+  set_active_reaction as L,
+  set_component_context as M,
+  Batch as N,
+  handle_error as O,
+  active_reaction as P,
+  component_context as Q,
+  internal_set as R,
+  destroy_effect as S,
+  invoke_error_boundary as T,
+  svelte_boundary_reset_onerror as U,
+  HYDRATION_START_FAILED as V,
+  svelte_boundary_reset_noop as W,
+  EFFECT_TRANSPARENT as X,
+  EFFECT_PRESERVED as Y,
+  define_property as Z,
+  init_operations as _,
   attr as a,
-  array_from as a0,
-  is_passive_event as a1,
-  push$1 as a2,
-  pop$1 as a3,
-  set as a4,
-  LEGACY_PROPS as a5,
-  flushSync as a6,
-  mutable_source as a7,
-  render as a8,
-  setContext as a9,
-  attributes as aa,
-  clsx as ab,
-  attr_style as ac,
-  stringify as ad,
-  head as ae,
-  attr_class as b,
-  ensure_array_like as c,
+  hydration_failed as a0,
+  clear_text_content as a1,
+  component_root as a2,
+  array_from as a3,
+  is_passive_event as a4,
+  push$1 as a5,
+  pop$1 as a6,
+  set as a7,
+  LEGACY_PROPS as a8,
+  flushSync as a9,
+  mutable_source as aa,
+  render as ab,
+  setContext as ac,
+  ssr_context as ad,
+  slot as ae,
+  bind_props as af,
+  fallback as ag,
+  invalid_default_snippet as ah,
+  sanitize_props as ai,
+  rest_props as aj,
+  safe_not_equal as ak,
+  subscribe_to_store as al,
+  run_all as am,
+  ensure_array_like as b,
+  attr_class as c,
   derived as d,
   escape_html as e,
-  store_get as f,
+  attr_style as f,
   getContext as g,
-  hydration_mismatch as h,
-  HYDRATION_END as i,
-  HYDRATION_START as j,
-  HYDRATION_START_ELSE as k,
-  get_next_sibling as l,
-  effect_tracking as m,
+  stringify as h,
+  head as i,
+  clsx as j,
+  hydration_mismatch as k,
+  HYDRATION_END as l,
+  HYDRATION_START as m,
   noop as n,
-  get as o,
-  source as p,
-  untrack as q,
-  render_effect as r,
-  safe_not_equal as s,
-  increment as t,
+  HYDRATION_START_ELSE as o,
+  get_next_sibling as p,
+  effect_tracking as q,
+  get as r,
+  store_get as s,
+  render_effect as t,
   unsubscribe_stores as u,
-  queue_micro_task as v,
-  active_effect as w,
-  block as x,
-  branch as y,
-  create_text as z
+  source as v,
+  untrack as w,
+  increment as x,
+  queue_micro_task as y,
+  active_effect as z
 };
