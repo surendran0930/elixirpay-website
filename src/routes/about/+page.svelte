@@ -673,7 +673,7 @@
 		     (barely offset, meant only to "peek out" a few px) overlapped
 		     into unreadable text. -->
 		<div class="container-page relative z-10 mt-8 w-full">
-			<div class="relative mx-auto aspect-[4/5] max-w-3xl sm:aspect-[950/482]">
+			<div class="relative mx-auto aspect-[4/5] max-w-3xl md:aspect-[950/482]">
 				{#each approachCards as card, i}
 					{@const stepsBehind = Math.max(0, activeCardStage - i)}
 					{@const notYetArrived = i > activeCardStage}
@@ -699,19 +699,29 @@
 
 						<!-- Percentage-based (not fixed px) padding so this overlay stays
 						     aligned with the frame image's own header/dots region at any
-						     rendered width — pt-[20%] clears the baked-in dots + wordmark.
-						     CSS resolves vertical padding % against the box's *width*, not
-						     height, so switching to a taller mobile aspect-ratio (above)
-						     silently shrunk that clearance relative to the new height —
-						     pt-[49%] is the width-relative value that reproduces the same
-						     ~39%-of-height gap at the 4/5 mobile ratio. Icon/title/body
-						     sizes also step down on mobile so they fit the shorter card. -->
-						<div class="absolute inset-0 flex flex-col px-[7%] pb-[6%] pt-[49%] sm:pt-[20%]">
-							<img src={card.icon} alt="" class="h-[16%] w-auto self-start sm:h-[32.5%]" />
-							<h3 class="mt-[4%] text-web-20 font-bold text-gray-900 sm:text-web-24">
+						     rendered width. Icon/title/body sizes also step down below
+						     `md` so they fit the shorter card — the switch is keyed to
+						     `md` (768px), not `sm` (480px): the short/wide desktop aspect
+						     ratio above only has enough absolute height once the card
+						     itself is wide enough (~768px+), so anything narrower (phones
+						     *and* small tablets around ~540px) needs to stay on the taller
+						     mobile ratio + smaller icon/text or the content overflows the
+						     card regardless of top padding.
+						     Mobile pt-[40%] is a deliberate middle ground: any lower
+						     (e.g. ~34%) and the icon/title sit high enough to collide with
+						     the previous card's rotated corner peeking out from behind
+						     (the "fanned stack" effect); any higher (e.g. ~49%, the
+						     original value) and the longest card's body copy
+						     ("Simplicity Over Complexity") has no room before this card's
+						     own overflow-hidden clips it. -->
+						<div
+							class="absolute inset-0 flex flex-col px-[7%] pb-[6%] pt-[calc(40%+18px)] md:pt-[calc(14%+10px)]"
+						>
+							<img src={card.icon} alt="" class="h-[16%] w-auto self-start md:h-[32.5%]" />
+							<h3 class="mt-[4%] text-web-20 font-bold text-gray-900 md:text-web-24">
 								{card.title}
 							</h3>
-							<p class="mt-[2%] text-para-14 text-gray-600 sm:text-para-24">
+							<p class="mt-[2%] text-para-14 text-gray-600 md:text-para-24">
 								{#each card.body as part}<span
 										class={part.bold ? 'font-semibold text-gray-800' : ''}>{part.text}</span
 									>{/each}

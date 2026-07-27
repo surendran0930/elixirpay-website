@@ -109,7 +109,8 @@
 			<div>
 				<img src={logo} alt="ElixirPay" class="h-16 w-auto" />
 				<p class="mt-6 max-w-xs text-para-16 text-white/50">
-					Get started with DOSS ARP and see how composable operations can work for your business.
+					Get started with ElixirPay and see how composable payment operations can work for your
+					business.
 				</p>
 				<a
 					href="/contact"

@@ -1132,9 +1132,18 @@
 				{/each}
 			</div>
 
-			<!-- Content panel -->
-			<div class="relative flex flex-1 items-start px-8 py-10 md:px-12">
-				<div class="max-w-md">
+			<!-- Content panel — text and illustration are flex siblings (not
+			     text-in-flow + illustration-absolutely-positioned like before),
+			     so they can never overlap: the illustration is a fixed-size
+			     shrink-0 item and the text takes whatever space is left,
+			     wrapping instead of colliding. The old absolute-positioned
+			     480px illustration only had room at very wide viewports (the
+			     "lg" breakpoint's 1024-1439px range isn't wide enough for a
+			     max-w-md text block *and* a fixed 480px image side by side, so
+			     they overlapped there) — this restructure fixes that at every
+			     width instead of just picking a new magic-number breakpoint. -->
+			<div class="relative flex flex-1 items-center gap-6 px-8 py-10 md:px-12">
+				<div class="max-w-md flex-1 xl:self-start xl:-mt-2">
 					<h3 class="text-web-26 font-bold text-gray-900">{activeItem.heading}</h3>
 					<p class="mt-4 text-para-18 text-gray-500">{activeItem.description}</p>
 					<a
@@ -1152,12 +1161,12 @@
 					<img
 						src={activeItem.illustration}
 						alt=""
-						class="absolute bottom-8 right-24 illustration-float hidden h-[480px] w-[480px] object-contain lg:block"
+						class="illustration-float hidden shrink-0 object-contain lg:block lg:h-56 lg:w-56 xl:h-96 xl:w-96 2xl:h-[480px] 2xl:w-[480px]"
 					/>
 				{:else}
 					<svg
 						viewBox="0 0 200 200"
-						class="absolute bottom-8 right-24 illustration-float hidden h-[480px] w-[480px] text-gray-300 lg:block"
+						class="illustration-float hidden shrink-0 text-gray-300 lg:block lg:h-56 lg:w-56 xl:h-96 xl:w-96 2xl:h-[480px] 2xl:w-[480px]"
 						fill="none"
 						stroke="currentColor"
 						stroke-width="1.5"
@@ -1836,7 +1845,7 @@
 	     it to the bottom, flush with the stats strip that follows, instead
 	     of leaving a gap sized to "however much shorter the left column's
 	     own content is than the accordion". -->
-	<div class="mx-4 grid grid-cols-1 gap-16 lg:mx-[120px] lg:grid-cols-[1fr_800px] lg:items-stretch lg:gap-12">
+	<div class="mx-4 grid grid-cols-1 gap-16 lg:mx-[120px] lg:grid-cols-[1fr_min(800px,50%)] lg:items-stretch lg:gap-12">
 
 		<div class="flex flex-col">
 			<h2 class="text-web-32 font-semibold text-gray-900 sm:text-web-40 md:text-web-48">

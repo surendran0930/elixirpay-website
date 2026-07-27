@@ -506,7 +506,7 @@
      section, its own question set, no stats strip/CTA button below
      (reference doesn't show either here). -->
 <section class="bg-white py-[160px]">
-	<div class="mx-4 grid grid-cols-1 gap-16 lg:mx-[120px] lg:grid-cols-[1fr_800px] lg:items-stretch lg:gap-12">
+	<div class="mx-4 grid grid-cols-1 gap-16 lg:mx-[120px] lg:grid-cols-[1fr_min(800px,50%)] lg:items-stretch lg:gap-12">
 		<div class="flex flex-col">
 			<h2 class="text-web-32 font-semibold text-gray-900 sm:text-web-40 md:text-web-48">Product FAQs</h2>
 			<p class="mt-6 max-w-lg text-para-20 text-gray-500">
