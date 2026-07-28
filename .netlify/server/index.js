@@ -1,5 +1,5 @@
-import { E as ENDPOINT_METHODS, P as PAGE_METHODS, i as negotiate, m as method_not_allowed, h as handle_error_and_jsonify, j as get_status, k as is_form_content_type, l as normalize_error, o as create_replacer, b as noop, q as get_global_name, r as serialize_uses, t as clarify_devalue_error, u as get_node_type, v as escape_html, g as create_remote_key, p as parse_remote_arg, w as deserialize_binary_form, e as stringify, x as split_remote_key, S as SVELTE_KIT_ASSETS, y as static_error_page, z as redirect_response, A as once, B as has_prerendered_path, C as get_set_cookies, T as TRAILING_SLASH_PARAM, I as INVALIDATED_PARAM, D as handle_fatal_error, F as format_server_error } from "./chunks/utils.js";
-import { D as DEV } from "./chunks/false.js";
+import { E as ENDPOINT_METHODS, P as PAGE_METHODS, i as negotiate, m as method_not_allowed, h as handle_error_and_jsonify, j as get_status, k as is_form_content_type, l as normalize_error, o as create_replacer, b as noop, q as get_global_name, r as serialize_uses, u as clarify_devalue_error, v as get_node_type, w as validate_depends, x as validate_load_response, y as escape_html, g as create_remote_key, p as parse_remote_arg, z as deserialize_binary_form, e as stringify, A as split_remote_key, S as SVELTE_KIT_ASSETS, B as count_non_ssi_comments, C as static_error_page, D as redirect_response, F as once, G as has_prerendered_path, H as get_set_cookies, T as TRAILING_SLASH_PARAM, I as INVALIDATED_PARAM, J as handle_fatal_error, K as format_server_error } from "./chunks/utils.js";
+import { D as DEV } from "./chunks/index.js";
 import { json, text, error, isRedirect } from "@sveltejs/kit";
 import { Redirect, SvelteKitError, ActionFailure, HttpError } from "@sveltejs/kit/internal";
 import { with_request_store, merge_tracing, try_get_request_store } from "@sveltejs/kit/internal/server";
@@ -7,7 +7,7 @@ import { c as assets, b as base, a as app_dir, r as relative, o as override, d a
 import * as devalue from "devalue";
 import { d as decode_params, m as make_trackable, a as disable_search, S as SCHEME, v as validate_layout_server_exports, b as validate_layout_exports, c as validate_page_server_exports, e as validate_page_exports, n as normalize_path, r as resolve, f as decode_pathname, g as validate_server_exports } from "./chunks/exports.js";
 import { b as base64_encode, t as text_encoder, g as get_relative_path } from "./chunks/utils2.js";
-import { w as writable, r as readable } from "./chunks/index2.js";
+import { r as readable, w as writable } from "./chunks/index2.js";
 import { p as public_env, r as read_implementation, o as options, s as set_private_env, a as set_public_env, g as get_hooks, b as set_read_implementation } from "./chunks/internal.js";
 import { parse, serialize } from "cookie";
 import * as set_cookie_parser from "set-cookie-parser";
@@ -258,7 +258,7 @@ async function handle_action_json_request(event, event_state, options2, server) 
     const no_actions_error = new SvelteKitError(
       405,
       "Method Not Allowed",
-      `POST method not allowed. No form actions exist for ${"this page"}`
+      `POST method not allowed. No form actions exist for ${`the page at ${event.route.id}`}`
     );
     return action_json(
       {
@@ -278,7 +278,9 @@ async function handle_action_json_request(event, event_state, options2, server) 
   check_named_default_separate(actions);
   try {
     const data = await call_action(event, event_state, actions);
-    if (DEV) ;
+    if (DEV) {
+      validate_action_return(data);
+    }
     if (data instanceof ActionFailure) {
       return action_json({
         type: "failure",
@@ -356,14 +358,16 @@ async function handle_action_request(event, event_state, server) {
       error: new SvelteKitError(
         405,
         "Method Not Allowed",
-        `POST method not allowed. No form actions exist for ${"this page"}`
+        `POST method not allowed. No form actions exist for ${`the page at ${event.route.id}`}`
       )
     };
   }
   check_named_default_separate(actions);
   try {
     const data = await call_action(event, event_state, actions);
-    if (DEV) ;
+    if (DEV) {
+      validate_action_return(data);
+    }
     if (data instanceof ActionFailure) {
       return {
         type: "failure",
@@ -719,11 +723,21 @@ async function load_server_data({ event, event_state, state, node, parent }) {
   const url = make_trackable(
     event.url,
     () => {
+      if (done && !uses.url) {
+        console.warn(
+          `${node.server_id}: Accessing URL properties in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the URL changes`
+        );
+      }
       if (is_tracking) {
         uses.url = true;
       }
     },
     (param) => {
+      if (done && !uses.search_params.has(param)) {
+        console.warn(
+          `${node.server_id}: Accessing URL properties in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the URL changes`
+        );
+      }
       if (is_tracking) {
         uses.search_params.add(param);
       }
@@ -732,6 +746,7 @@ async function load_server_data({ event, event_state, state, node, parent }) {
   if (state.prerendering) {
     disable_search(url);
   }
+  let done = false;
   const result = await record_span({
     name: "sveltekit.load",
     attributes: {
@@ -746,18 +761,38 @@ async function load_server_data({ event, event_state, state, node, parent }) {
         () => load.call(null, {
           ...traced_event,
           fetch: (info, init2) => {
-            new URL(info instanceof Request ? info.url : info, event.url);
+            const url2 = new URL(info instanceof Request ? info.url : info, event.url);
+            if (done && !uses.dependencies.has(url2.href)) {
+              console.warn(
+                `${node.server_id}: Calling \`event.fetch(...)\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the dependency is invalidated`
+              );
+            }
             return event.fetch(info, init2);
           },
           /** @param {string[]} deps */
           depends: (...deps) => {
             for (const dep of deps) {
               const { href } = new URL(dep, event.url);
+              {
+                validate_depends(node.server_id || "missing route ID", dep);
+                if (done && !uses.dependencies.has(href)) {
+                  console.warn(
+                    `${node.server_id}: Calling \`depends(...)\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the dependency is invalidated`
+                  );
+                }
+              }
               uses.dependencies.add(href);
             }
           },
           params: new Proxy(event.params, {
             get: (target, key2) => {
+              if (done && typeof key2 === "string" && !uses.params.has(key2)) {
+                console.warn(
+                  `${node.server_id}: Accessing \`params.${String(
+                    key2
+                  )}\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the param changes`
+                );
+              }
               if (is_tracking) {
                 uses.params.add(key2);
               }
@@ -768,6 +803,11 @@ async function load_server_data({ event, event_state, state, node, parent }) {
             }
           }),
           parent: async () => {
+            if (done && !uses.parent) {
+              console.warn(
+                `${node.server_id}: Calling \`parent(...)\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when parent data changes`
+              );
+            }
             if (is_tracking) {
               uses.parent = true;
             }
@@ -775,6 +815,13 @@ async function load_server_data({ event, event_state, state, node, parent }) {
           },
           route: new Proxy(event.route, {
             get: (target, key2) => {
+              if (done && typeof key2 === "string" && !uses.route) {
+                console.warn(
+                  `${node.server_id}: Accessing \`route.${String(
+                    key2
+                  )}\` in a promise handler after \`load(...)\` has returned will not cause the function to re-run when the route changes`
+                );
+              }
               if (is_tracking) {
                 uses.route = true;
               }
@@ -798,6 +845,10 @@ async function load_server_data({ event, event_state, state, node, parent }) {
       return result2;
     }
   });
+  {
+    validate_load_response(result, `in ${node.server_id}`);
+  }
+  done = true;
   return {
     type: "data",
     data: result ?? null,
@@ -848,6 +899,9 @@ async function load_data({
       );
     }
   });
+  {
+    validate_load_response(result, `in ${node.universal_id}`);
+  }
   return result ?? null;
 }
 function create_universal_fetch(event, state, fetched, csr, resolve_opts) {
@@ -989,7 +1043,7 @@ function create_universal_fetch(event, state, fetched, csr, resolve_opts) {
           const included = resolve_opts.filterSerializedResponseHeaders(lower, value);
           if (!included) {
             throw new Error(
-              `Failed to get response header "${lower}" — it must be included by the \`filterSerializedResponseHeaders\` option: https://svelte.dev/docs/kit/hooks#Server-hooks-handle (at ${event.route.id})`
+              `Failed to get response header "${lower}" — it must be included by the \`filterSerializedResponseHeaders\` option: https://svelte.dev/docs/kit/hooks#handle (at ${event.route.id})`
             );
           }
         }
@@ -1838,7 +1892,7 @@ async function handle_remote_form_post_internal(event, state, manifest, id) {
       error: new SvelteKitError(
         405,
         "Method Not Allowed",
-        `POST method not allowed. No form actions exist for ${"this page"}`
+        `POST method not allowed. No form actions exist for ${`the page at ${event.route.id}`}`
       )
     };
   }
@@ -2005,7 +2059,22 @@ async function render_response({
     };
     const fetch2 = globalThis.fetch;
     try {
-      if (DEV) ;
+      if (DEV) {
+        let warned = false;
+        globalThis.fetch = (info, init2) => {
+          if (typeof info === "string" && !SCHEME.test(info)) {
+            throw new Error(
+              `Cannot call \`fetch\` eagerly during server-side rendering with relative URL (${info}) — put your \`fetch\` calls inside \`onMount\` or a \`load\` function instead`
+            );
+          } else if (!warned && !try_get_request_store()?.state.is_in_remote_function) {
+            console.warn(
+              "Avoid calling `fetch` eagerly during server-side rendering — put your `fetch` calls inside `onMount` or a `load` function instead"
+            );
+            warned = true;
+          }
+          return fetch2(info, init2);
+        };
+      }
       const state2 = { ...event_state, is_in_render: true };
       rendered = await with_request_store({ event, state: state2 }, async () => {
         if (relative) override({ base: base$1, assets: assets$1 });
@@ -2027,6 +2096,9 @@ async function render_response({
         return { head: head2, html: html2, css, hashes };
       });
     } finally {
+      {
+        globalThis.fetch = fetch2;
+      }
       reset();
     }
   } else {
@@ -2296,6 +2368,21 @@ ${indent}}`);
   }) || "";
   if (!chunks) {
     headers2.set("etag", `"${hash(transformed)}"`);
+  }
+  {
+    if (page_config.csr) {
+      if (count_non_ssi_comments(transformed) < count_non_ssi_comments(html)) {
+        console.warn(
+          "\x1B[1m\x1B[31mRemoving comments in transformPageChunk can break Svelte's hydration\x1B[39m\x1B[22m"
+        );
+      }
+    } else {
+      if (chunks) {
+        console.warn(
+          "\x1B[1m\x1B[31mReturning promises from server `load` functions will only work if `csr === true`\x1B[39m\x1B[22m"
+        );
+      }
+    }
   }
   return !chunks ? text(transformed, {
     status,
@@ -2620,7 +2707,17 @@ async function render_page(event, event_state, page, options2, manifest, state, 
     const ssr = nodes.ssr();
     const csr = nodes.csr();
     if (ssr === false && !(state.prerendering && should_prerender_data)) {
-      if (DEV && action_result && !event.request.headers.has("x-sveltekit-action")) ;
+      if (DEV && action_result && !event.request.headers.has("x-sveltekit-action")) {
+        if (action_result.type === "error") {
+          console.warn(
+            "The form action returned an error, but +error.svelte wasn't rendered because SSR is off. To get the error page with CSR, enhance your form with `use:enhance`. See https://svelte.dev/docs/kit/form-actions#progressive-enhancement-use-enhance"
+          );
+        } else if (action_result.data) {
+          console.warn(
+            "The form action returned a value, but it isn't available in `page.form`, because SSR is off. To handle the returned value in CSR, enhance your form with `use:enhance`. See https://svelte.dev/docs/kit/form-actions#progressive-enhancement-use-enhance"
+          );
+        }
+      }
       return await render_response({
         // provide nodes without running load functions so that the styles and
         // fonts are linked in the head before CSR takes over
@@ -2990,6 +3087,8 @@ function redirect_json_response(redirect) {
   );
 }
 const INVALID_COOKIE_CHARACTER_REGEX = /[\x00-\x1F\x7F()<>@,;:"/[\]?={} \t]/;
+const cookie_paths = {};
+const MAX_COOKIE_SIZE = 4096;
 function validate_options(options2) {
   if (options2?.path === void 0) {
     throw new Error("You must specify a `path` when setting, deleting or serializing cookies");
@@ -3026,6 +3125,17 @@ function get_cookies(request, url) {
       }
       const req_cookies = parse(header, { decode: opts?.decode });
       const cookie = req_cookies[name];
+      if (!cookie) {
+        const paths = Array.from(cookie_paths[name] ?? []).filter((path) => {
+          return path_matches(path, url.pathname) && path !== url.pathname;
+        });
+        if (paths.length > 0) {
+          console.warn(
+            // prettier-ignore
+            `'${name}' cookie does not exist for ${url.pathname}, but was previously set at ${conjoin([...paths])}. Did you mean to set its 'path' to '/' instead?`
+          );
+        }
+      }
       return cookie;
     },
     /**
@@ -3121,6 +3231,19 @@ function get_cookies(request, url) {
     const cookie_key = generate_cookie_key(options2.domain, path, name);
     const cookie = { name, value, options: { ...options2, path } };
     new_cookies.set(cookie_key, cookie);
+    {
+      const encoder = cookie.options.encode || encodeURIComponent;
+      const size = text_encoder.encode(name).byteLength + text_encoder.encode(encoder(value)).byteLength;
+      if (size > MAX_COOKIE_SIZE) {
+        throw new Error(`Cookie "${name}" is too large, and will be discarded by the browser`);
+      }
+      cookie_paths[name] ??= /* @__PURE__ */ new Set();
+      if (!value) {
+        cookie_paths[name].delete(path);
+      } else {
+        cookie_paths[name].add(path);
+      }
+    }
   }
   function set_trailing_slash(trailing_slash) {
     normalized_url = normalize_path(url.pathname, trailing_slash);
@@ -3149,6 +3272,10 @@ function add_cookies_to_headers(headers2, cookies) {
       headers2.append("set-cookie", serialize(name, value, { ...options2, path }));
     }
   }
+}
+function conjoin(array2) {
+  if (array2.length <= 2) return array2.join(" and ");
+  return `${array2.slice(0, -1).join(", ")} and ${array2.at(-1)}`;
 }
 function create_fetch({ event, options: options2, manifest, state, get_cookie_header, set_internal }) {
   const server_fetch = async (info, init2) => {
@@ -3304,6 +3431,59 @@ function get_public_env(request) {
   }
   return new Response(`export const env=${payload}`, { headers });
 }
+const VALID_CACHE_CONTROL_DIRECTIVES = /* @__PURE__ */ new Set([
+  "max-age",
+  "public",
+  "private",
+  "no-cache",
+  "no-store",
+  "must-revalidate",
+  "proxy-revalidate",
+  "s-maxage",
+  "immutable",
+  "stale-while-revalidate",
+  "stale-if-error",
+  "no-transform",
+  "only-if-cached",
+  "max-stale",
+  "min-fresh"
+]);
+const CONTENT_TYPE_PATTERN = /^(application|audio|example|font|haptics|image|message|model|multipart|text|video|x-[a-z]+)\/[-+.\w]+$/i;
+const HEADER_VALIDATORS = {
+  "cache-control": (value) => {
+    const error_suffix = `(While parsing "${value}".)`;
+    const parts = value.split(",").map((part) => part.trim());
+    if (parts.some((part) => !part)) {
+      throw new Error(`\`cache-control\` header contains empty directives. ${error_suffix}`);
+    }
+    const directives = parts.map((part) => part.split("=")[0].toLowerCase());
+    const invalid = directives.find((directive) => !VALID_CACHE_CONTROL_DIRECTIVES.has(directive));
+    if (invalid) {
+      throw new Error(
+        `Invalid cache-control directive "${invalid}". Did you mean one of: ${[...VALID_CACHE_CONTROL_DIRECTIVES].join(", ")}? ${error_suffix}`
+      );
+    }
+  },
+  "content-type": (value) => {
+    const type = value.split(";")[0].trim();
+    const error_suffix = `(While parsing "${value}".)`;
+    if (!CONTENT_TYPE_PATTERN.test(type)) {
+      throw new Error(`Invalid content-type value "${type}". ${error_suffix}`);
+    }
+  }
+};
+function validateHeaders(headers2) {
+  for (const [key2, value] of Object.entries(headers2)) {
+    const validator = HEADER_VALIDATORS[key2.toLowerCase()];
+    try {
+      validator?.(value);
+    } catch (error2) {
+      if (error2 instanceof Error) {
+        console.warn(`[SvelteKit] ${error2.message}`);
+      }
+    }
+  }
+}
 const default_transform = ({ html }) => html;
 const default_filter = () => false;
 const default_preload = ({ type }) => type === "js" || type === "css";
@@ -3391,6 +3571,9 @@ async function internal_respond(request, options2, manifest, state) {
     request,
     route: { id: null },
     setHeaders: (new_headers) => {
+      {
+        validateHeaders(new_headers);
+      }
       for (const key2 in new_headers) {
         const lower = key2.toLowerCase();
         const value = new_headers[key2];
@@ -3514,12 +3697,20 @@ async function internal_respond(request, options2, manifest, state) {
       if (url.pathname === base || url.pathname === base + "/") {
         trailing_slash = "always";
       } else if (page_nodes) {
-        if (DEV) ;
+        if (DEV) {
+          page_nodes.validate();
+        }
         trailing_slash = page_nodes.trailing_slash();
       } else if (route.endpoint) {
         const node = await route.endpoint();
         trailing_slash = node.trailingSlash ?? "never";
-        if (DEV) ;
+        if (DEV) {
+          validate_server_exports(
+            node,
+            /** @type {string} */
+            route.endpoint_id
+          );
+        }
       }
       if (!is_data_request) {
         const normalized = normalize_path(url.pathname, trailing_slash);

@@ -1,5 +1,11 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
+	import emailjs from '@emailjs/browser';
+	import {
+		PUBLIC_EMAILJS_SERVICE_ID,
+		PUBLIC_EMAILJS_TEMPLATE_ID,
+		PUBLIC_EMAILJS_PUBLIC_KEY
+	} from '$env/static/public';
 	import Button from '$lib/components/Button.svelte';
 
 	const sealLogo = 'https://pub-b08d98924f7343bb8f10f9528d02cd74.r2.dev/contact%20us/stamp.svg';
@@ -16,8 +22,7 @@
 		{ target: 24, suffix: '*7', label: 'Support' }
 	];
 	let statValues = $state(stats.map(() => 0));
-	/** @type {HTMLDivElement | undefined} */
-	let statsEl = $state();
+	let statsEl: HTMLDivElement | undefined = $state();
 
 	onMount(() => {
 		let animated = false;
@@ -27,8 +32,7 @@
 				animated = true;
 				const duration = 1500;
 				const start = performance.now();
-				/** @param {number} now */
-				function tick(now) {
+				function tick(now: number) {
 					const progress = Math.min((now - start) / duration, 1);
 					const eased = 1 - Math.pow(1 - progress, 4);
 					statValues = stats.map((stat) => stat.target * eased);
@@ -49,6 +53,97 @@
 		'Advertisement',
 		'Other'
 	];
+
+	// Contact form: field state, validation, and EmailJS submission.
+	let fullName = $state('');
+	let email = $state('');
+	let mobile = $state('');
+	let source = $state('');
+	let message = $state('');
+
+	type FormErrors = Partial<Record<'fullName' | 'email' | 'mobile' | 'source' | 'message', string>>;
+	let errors = $state<FormErrors>({});
+	let isSubmitting = $state(false);
+	let submitStatus = $state<'idle' | 'success' | 'error'>('idle');
+	let statusMessage = $state('');
+
+	const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+	function validate(): boolean {
+		const nextErrors: FormErrors = {};
+
+		if (!fullName.trim()) {
+			nextErrors.fullName = 'Please enter your full name.';
+		}
+
+		if (!email.trim()) {
+			nextErrors.email = 'Please enter your email address.';
+		} else if (!EMAIL_PATTERN.test(email.trim())) {
+			nextErrors.email = 'Please enter a valid email address.';
+		}
+
+		const mobileDigits = mobile.replace(/\D/g, '');
+		if (!mobile.trim()) {
+			nextErrors.mobile = 'Please enter your mobile number.';
+		} else if (mobileDigits.length < 7 || mobileDigits.length > 15) {
+			nextErrors.mobile = 'Please enter a valid mobile number.';
+		}
+
+		if (!source) {
+			nextErrors.source = 'Please select how you came to know us.';
+		}
+
+		if (!message.trim()) {
+			nextErrors.message = 'Please tell us how we can help.';
+		}
+
+		errors = nextErrors;
+		return Object.keys(nextErrors).length === 0;
+	}
+
+	async function handleSubmit(event: SubmitEvent) {
+		event.preventDefault();
+
+		// Guards against double-clicks / repeat Enter presses firing a second send mid-flight.
+		if (isSubmitting) return;
+
+		submitStatus = 'idle';
+		statusMessage = '';
+
+		if (!validate()) return;
+
+		isSubmitting = true;
+
+		try {
+			await emailjs.send(
+				PUBLIC_EMAILJS_SERVICE_ID,
+				PUBLIC_EMAILJS_TEMPLATE_ID,
+				{
+					full_name: fullName.trim(),
+					email: email.trim(),
+					mobile: mobile.trim(),
+					source,
+					message: message.trim()
+				},
+				{ publicKey: PUBLIC_EMAILJS_PUBLIC_KEY }
+			);
+
+			submitStatus = 'success';
+			statusMessage = 'Thank you for contacting us. Our team will contact you shortly.';
+			fullName = '';
+			email = '';
+			mobile = '';
+			source = '';
+			message = '';
+			errors = {};
+		} catch (err) {
+			console.error('EmailJS send failed:', err);
+			submitStatus = 'error';
+			statusMessage = "Sorry, we couldn't send your message. Please try again in a moment.";
+		} finally {
+			isSubmitting = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -116,32 +211,68 @@
 							</p>
 						</div>
 
-						<form class="space-y-4 p-6">
+						<form class="space-y-4 p-6" novalidate onsubmit={handleSubmit}>
 							<label class="block">
 								<span class="text-para-16 font-semibold text-gray-900">Full name</span>
 								<input
 									type="text"
+									name="fullName"
 									placeholder="Enter your name"
-									class="mt-2 w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-para-16 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400"
+									bind:value={fullName}
+									disabled={isSubmitting}
+									aria-invalid={errors.fullName ? 'true' : undefined}
+									aria-describedby={errors.fullName ? 'contact-fullName-error' : undefined}
+									class="mt-2 w-full rounded-lg border bg-gray-100 px-4 py-2.5 text-para-16 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400 disabled:opacity-60 {errors.fullName
+										? 'border-red-400'
+										: 'border-gray-200'}"
 								/>
+								{#if errors.fullName}
+									<p id="contact-fullName-error" role="alert" class="mt-1.5 text-para-14 text-red-500">
+										{errors.fullName}
+									</p>
+								{/if}
 							</label>
 
 							<label class="block">
 								<span class="text-para-16 font-semibold text-gray-900">Email ID</span>
 								<input
 									type="email"
+									name="email"
 									placeholder="Enter your email"
-									class="mt-2 w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-para-16 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400"
+									bind:value={email}
+									disabled={isSubmitting}
+									aria-invalid={errors.email ? 'true' : undefined}
+									aria-describedby={errors.email ? 'contact-email-error' : undefined}
+									class="mt-2 w-full rounded-lg border bg-gray-100 px-4 py-2.5 text-para-16 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400 disabled:opacity-60 {errors.email
+										? 'border-red-400'
+										: 'border-gray-200'}"
 								/>
+								{#if errors.email}
+									<p id="contact-email-error" role="alert" class="mt-1.5 text-para-14 text-red-500">
+										{errors.email}
+									</p>
+								{/if}
 							</label>
 
 							<label class="block">
 								<span class="text-para-16 font-semibold text-gray-900">Mobile number</span>
 								<input
 									type="tel"
+									name="mobile"
 									placeholder="Enter your number"
-									class="mt-2 w-full rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-para-16 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400"
+									bind:value={mobile}
+									disabled={isSubmitting}
+									aria-invalid={errors.mobile ? 'true' : undefined}
+									aria-describedby={errors.mobile ? 'contact-mobile-error' : undefined}
+									class="mt-2 w-full rounded-lg border bg-gray-100 px-4 py-2.5 text-para-16 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400 disabled:opacity-60 {errors.mobile
+										? 'border-red-400'
+										: 'border-gray-200'}"
 								/>
+								{#if errors.mobile}
+									<p id="contact-mobile-error" role="alert" class="mt-1.5 text-para-14 text-red-500">
+										{errors.mobile}
+									</p>
+								{/if}
 							</label>
 
 							<label class="block">
@@ -151,9 +282,16 @@
 								     was sitting slightly too far left. -->
 								<div class="relative mt-2">
 									<select
-										class="w-full appearance-none rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 pr-10 text-para-16 text-gray-500 outline-none focus:border-blue-400"
+										name="source"
+										bind:value={source}
+										disabled={isSubmitting}
+										aria-invalid={errors.source ? 'true' : undefined}
+										aria-describedby={errors.source ? 'contact-source-error' : undefined}
+										class="w-full appearance-none rounded-lg border bg-gray-100 px-4 py-2.5 pr-10 text-para-16 text-gray-500 outline-none focus:border-blue-400 disabled:opacity-60 {errors.source
+											? 'border-red-400'
+											: 'border-gray-200'}"
 									>
-										<option value="" selected disabled>Select Here</option>
+										<option value="" disabled>Select Here</option>
 										{#each howYouKnowOptions as option}
 											<option value={option}>{option}</option>
 										{/each}
@@ -172,22 +310,53 @@
 										/>
 									</svg>
 								</div>
+								{#if errors.source}
+									<p id="contact-source-error" role="alert" class="mt-1.5 text-para-14 text-red-500">
+										{errors.source}
+									</p>
+								{/if}
 							</label>
 
 							<label class="block">
 								<span class="text-para-16 font-semibold text-gray-900">How can we Help</span>
 								<textarea
+									name="message"
 									rows="3"
 									placeholder="Enter Here"
-									class="mt-2 w-full resize-none rounded-lg border border-gray-200 bg-gray-100 px-4 py-2.5 text-para-16 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400"
+									bind:value={message}
+									disabled={isSubmitting}
+									aria-invalid={errors.message ? 'true' : undefined}
+									aria-describedby={errors.message ? 'contact-message-error' : undefined}
+									class="mt-2 w-full resize-none rounded-lg border bg-gray-100 px-4 py-2.5 text-para-16 text-gray-900 placeholder-gray-400 outline-none focus:border-blue-400 disabled:opacity-60 {errors.message
+										? 'border-red-400'
+										: 'border-gray-200'}"
 								></textarea>
+								{#if errors.message}
+									<p id="contact-message-error" role="alert" class="mt-1.5 text-para-14 text-red-500">
+										{errors.message}
+									</p>
+								{/if}
 							</label>
+
+							{#if statusMessage}
+								<p
+									role={submitStatus === 'error' ? 'alert' : 'status'}
+									aria-live="polite"
+									class="text-para-14 font-semibold {submitStatus === 'success'
+										? 'text-green-600'
+										: 'text-red-500'}"
+								>
+									{statusMessage}
+								</p>
+							{/if}
 
 							<div class="flex flex-col-reverse items-start gap-4 pt-1 sm:flex-row sm:items-center sm:justify-between">
 								<p class="text-para-14 text-gray-500">
 									You can also mail us to <span class="font-semibold text-gray-900">info@elixirpay.com</span>
 								</p>
-								<Button type="submit" color="neutral" variant="solid">Send message</Button>
+								<Button type="submit" color="neutral" variant="solid" loading={isSubmitting}>
+									{isSubmitting ? 'Sending…' : 'Send message'}
+								</Button>
 							</div>
 						</form>
 					</div>

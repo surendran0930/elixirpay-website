@@ -1,4 +1,4 @@
-import { h as hydration_mismatch, H as HYDRATION_ERROR, C as COMMENT_NODE, i as HYDRATION_END, j as HYDRATION_START, k as HYDRATION_START_ELSE, l as get_next_sibling, m as effect_tracking, o as get, r as render_effect, p as source, q as untrack, t as increment, v as queue_micro_task, w as active_effect, B as BOUNDARY_EFFECT, x as block, y as branch, z as create_text, A as pause_effect, D as current_batch, E as move_effect, F as defer_effect, G as set_active_effect, I as set_active_reaction, J as set_component_context, K as Batch, L as handle_error, M as active_reaction, N as component_context, O as internal_set, P as destroy_effect, Q as invoke_error_boundary, R as svelte_boundary_reset_onerror, S as HYDRATION_START_FAILED, T as svelte_boundary_reset_noop, U as EFFECT_TRANSPARENT, V as EFFECT_PRESERVED, W as define_property, X as init_operations, Y as get_first_child, Z as hydration_failed, _ as clear_text_content, $ as component_root, a0 as array_from, a1 as is_passive_event, a2 as push, a3 as pop, a4 as set, a5 as LEGACY_PROPS, a6 as flushSync, a7 as mutable_source, a8 as render, a9 as setContext, d as derived } from "./index.js";
+import { k as hydration_mismatch, H as HYDRATION_ERROR, C as COMMENT_NODE, l as HYDRATION_END, m as HYDRATION_START, o as HYDRATION_START_ELSE, q as get_next_sibling, t as tag, r as effect_tracking, v as get, w as render_effect, x as source, y as untrack, z as increment, A as queue_micro_task, B as active_effect, E as BOUNDARY_EFFECT, G as block, I as branch, J as create_text, K as pause_effect, L as current_batch, M as move_effect, N as defer_effect, O as set_active_effect, P as set_active_reaction, Q as set_component_context, R as Batch, S as handle_error, T as active_reaction, U as component_context, V as internal_set, W as destroy_effect, X as invoke_error_boundary, Y as svelte_boundary_reset_noop, Z as svelte_boundary_reset_onerror, _ as HYDRATION_START_FAILED, $ as EFFECT_TRANSPARENT, a0 as EFFECT_PRESERVED, a1 as define_property, a2 as init_operations, a3 as get_first_child, a4 as hydration_failed, a5 as clear_text_content, a6 as STATE_SYMBOL, a7 as state_proxy_unmount, a8 as lifecycle_double_unmount, a9 as component_root, aa as array_from, ab as is_passive_event, ac as push, ad as pop, ae as set, af as LEGACY_PROPS, ag as flushSync, ah as mutable_source, ai as render, F as FILENAME, aj as setContext, p as prevent_snippet_stringification, d as derived } from "./index.js";
 let hydrating = false;
 function set_hydrating(value) {
   hydrating = value;
@@ -54,6 +54,9 @@ function createSubscriber(start) {
   let subscribers = 0;
   let version = source(0);
   let stop;
+  {
+    tag(version, "createSubscriber version");
+  }
   return () => {
     if (effect_tracking()) {
       get(version);
@@ -125,6 +128,9 @@ class Boundary {
   #effect_pending = null;
   #effect_pending_subscriber = createSubscriber(() => {
     this.#effect_pending = source(this.#local_pending_count);
+    {
+      tag(this.#effect_pending, "$effect.pending()");
+    }
     return () => {
       this.#effect_pending = null;
     };
@@ -187,15 +193,54 @@ class Boundary {
    */
   #hydrate_failed_content(error) {
     const failed = this.#props.failed;
+    const { reset, invoke_onerror } = this.#create_reset(error);
+    queue_micro_task(invoke_onerror);
     if (!failed) return;
     this.#failed_effect = branch(() => {
       failed(
         this.#anchor,
         () => error,
-        () => () => {
-        }
+        () => reset
       );
     });
+  }
+  /**
+   * Creates the `reset` function for a failed boundary, along with a function
+   * that invokes `onerror` with it (if provided)
+   * @param {unknown} error
+   * @returns {{ reset: () => void, invoke_onerror: () => void }}
+   */
+  #create_reset(error) {
+    var did_reset = false;
+    var calling_on_error = false;
+    const reset = () => {
+      if (did_reset) {
+        svelte_boundary_reset_noop();
+        return;
+      }
+      did_reset = true;
+      if (calling_on_error) {
+        svelte_boundary_reset_onerror();
+      }
+      if (this.#failed_effect !== null) {
+        pause_effect(this.#failed_effect, () => {
+          this.#failed_effect = null;
+        });
+      }
+      this.#run(() => {
+        this.#render();
+      });
+    };
+    const invoke_onerror = () => {
+      try {
+        calling_on_error = true;
+        this.#props.onerror?.(error, reset);
+        calling_on_error = false;
+      } catch (err) {
+        invoke_error_boundary(err, this.#effect && this.#effect.parent);
+      }
+    };
+    return { reset, invoke_onerror };
   }
   #hydrate_pending_content() {
     const pending = this.#props.pending;
@@ -392,36 +437,10 @@ class Boundary {
       next();
       set_hydrate_node(skip_nodes());
     }
-    var onerror = this.#props.onerror;
     let failed = this.#props.failed;
-    var did_reset = false;
-    var calling_on_error = false;
-    const reset = () => {
-      if (did_reset) {
-        svelte_boundary_reset_noop();
-        return;
-      }
-      did_reset = true;
-      if (calling_on_error) {
-        svelte_boundary_reset_onerror();
-      }
-      if (this.#failed_effect !== null) {
-        pause_effect(this.#failed_effect, () => {
-          this.#failed_effect = null;
-        });
-      }
-      this.#run(() => {
-        this.#render();
-      });
-    };
     const handle_error_result = (transformed_error) => {
-      try {
-        calling_on_error = true;
-        onerror?.(transformed_error, reset);
-        calling_on_error = false;
-      } catch (error2) {
-        invoke_error_boundary(error2, this.#effect && this.#effect.parent);
-      }
+      const { reset, invoke_onerror } = this.#create_reset(transformed_error);
+      invoke_onerror();
       if (failed) {
         this.#failed_effect = this.#run(() => {
           try {
@@ -722,6 +741,13 @@ function unmount(component, options) {
     mounted_components.delete(component);
     return fn(options);
   }
+  {
+    if (STATE_SYMBOL in component) {
+      state_proxy_unmount();
+    } else {
+      lifecycle_double_unmount();
+    }
+  }
   return Promise.resolve();
 }
 function asClassComponent$1(component) {
@@ -871,69 +897,76 @@ function asClassComponent(component) {
   component_constructor.render = _render;
   return component_constructor;
 }
+Root[FILENAME] = ".svelte-kit/generated/root.svelte";
 function Root($$renderer, $$props) {
-  $$renderer.component(($$renderer2) => {
-    let {
-      stores,
-      page,
-      constructors,
-      components = [],
-      form,
-      data_0 = null,
-      data_1 = null
-    } = $$props;
-    {
-      setContext("__svelte__", stores);
-    }
-    {
-      stores.page.set(page);
-    }
-    const Pyramid_1 = derived(() => constructors[1]);
-    if (constructors[1]) {
-      $$renderer2.push("<!--[0-->");
-      const Pyramid_0 = constructors[0];
-      if (Pyramid_0) {
-        $$renderer2.push("<!--[-->");
-        Pyramid_0($$renderer2, {
-          data: data_0,
-          form,
-          params: page.params,
-          children: ($$renderer3) => {
-            if (Pyramid_1()) {
-              $$renderer3.push("<!--[-->");
-              Pyramid_1()($$renderer3, { data: data_1, form, params: page.params });
-              $$renderer3.push("<!--]-->");
-            } else {
-              $$renderer3.push("<!--[!-->");
-              $$renderer3.push("<!--]-->");
-            }
-          },
-          $$slots: { default: true }
-        });
-        $$renderer2.push("<!--]-->");
-      } else {
-        $$renderer2.push("<!--[!-->");
-        $$renderer2.push("<!--]-->");
+  $$renderer.component(
+    ($$renderer2) => {
+      let {
+        stores,
+        page,
+        constructors,
+        components = [],
+        form,
+        data_0 = null,
+        data_1 = null
+      } = $$props;
+      {
+        setContext("__svelte__", stores);
       }
-    } else {
-      $$renderer2.push("<!--[-1-->");
-      const Pyramid_0 = constructors[0];
-      if (Pyramid_0) {
-        $$renderer2.push("<!--[-->");
-        Pyramid_0($$renderer2, { data: data_0, form, params: page.params });
-        $$renderer2.push("<!--]-->");
-      } else {
-        $$renderer2.push("<!--[!-->");
-        $$renderer2.push("<!--]-->");
+      {
+        stores.page.set(page);
       }
-    }
-    $$renderer2.push(`<!--]--> `);
-    {
-      $$renderer2.push("<!--[-1-->");
-    }
-    $$renderer2.push(`<!--]-->`);
-  });
+      const Pyramid_1 = derived(() => constructors[1]);
+      if (constructors[1]) {
+        $$renderer2.push("<!--[0-->");
+        const Pyramid_0 = constructors[0];
+        if (Pyramid_0) {
+          $$renderer2.push("<!--[-->");
+          Pyramid_0($$renderer2, {
+            data: data_0,
+            form,
+            params: page.params,
+            children: prevent_snippet_stringification(($$renderer3) => {
+              if (Pyramid_1()) {
+                $$renderer3.push("<!--[-->");
+                Pyramid_1()($$renderer3, { data: data_1, form, params: page.params });
+                $$renderer3.push("<!--]-->");
+              } else {
+                $$renderer3.push("<!--[!-->");
+                $$renderer3.push("<!--]-->");
+              }
+            }),
+            $$slots: { default: true }
+          });
+          $$renderer2.push("<!--]-->");
+        } else {
+          $$renderer2.push("<!--[!-->");
+          $$renderer2.push("<!--]-->");
+        }
+      } else {
+        $$renderer2.push("<!--[-1-->");
+        const Pyramid_0 = constructors[0];
+        if (Pyramid_0) {
+          $$renderer2.push("<!--[-->");
+          Pyramid_0($$renderer2, { data: data_0, form, params: page.params });
+          $$renderer2.push("<!--]-->");
+        } else {
+          $$renderer2.push("<!--[!-->");
+          $$renderer2.push("<!--]-->");
+        }
+      }
+      $$renderer2.push(`<!--]--> `);
+      {
+        $$renderer2.push("<!--[-1-->");
+      }
+      $$renderer2.push(`<!--]-->`);
+    },
+    Root
+  );
 }
+Root.render = function() {
+  throw new Error("Component.render(...) is no longer valid in Svelte 5. See https://svelte.dev/docs/svelte/v5-migration-guide#Components-are-no-longer-classes for more information");
+};
 const root = asClassComponent(Root);
 export {
   root as r

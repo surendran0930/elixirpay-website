@@ -55,6 +55,8 @@ declare module '$env/static/private' {
 	export const DriverData: string;
 	export const EDITOR: string;
 	export const EXEPATH: string;
+	export const FPS_BROWSER_APP_PROFILE_STRING: string;
+	export const FPS_BROWSER_USER_PROFILE_STRING: string;
 	export const GIT_ASKPASS: string;
 	export const GOPATH: string;
 	export const HOME: string;
@@ -146,7 +148,6 @@ declare module '$env/static/private' {
 	export const WINDIR: string;
 	export const ZES_ENABLE_SYSMAN: string;
 	export const _: string;
-	export const __COMPAT_LAYER: string;
 }
 
 /**
@@ -183,7 +184,9 @@ declare module '$env/static/private' {
  * The above values will be the same _even if_ different values for `ENVIRONMENT` or `PUBLIC_BASE_URL` are set at runtime, as they are statically replaced in your code with their build time values.
  */
 declare module '$env/static/public' {
-	
+	export const PUBLIC_EMAILJS_SERVICE_ID: string;
+	export const PUBLIC_EMAILJS_TEMPLATE_ID: string;
+	export const PUBLIC_EMAILJS_PUBLIC_KEY: string;
 }
 
 /**
@@ -250,6 +253,8 @@ declare module '$env/dynamic/private' {
 		DriverData: string;
 		EDITOR: string;
 		EXEPATH: string;
+		FPS_BROWSER_APP_PROFILE_STRING: string;
+		FPS_BROWSER_USER_PROFILE_STRING: string;
 		GIT_ASKPASS: string;
 		GOPATH: string;
 		HOME: string;
@@ -341,7 +346,6 @@ declare module '$env/dynamic/private' {
 		WINDIR: string;
 		ZES_ENABLE_SYSMAN: string;
 		_: string;
-		__COMPAT_LAYER: string;
 		[key: `PUBLIC_${string}`]: undefined;
 		[key: `${string}`]: string | undefined;
 	}
@@ -397,6 +401,9 @@ declare module '$env/dynamic/private' {
  */
 declare module '$env/dynamic/public' {
 	export const env: {
+		PUBLIC_EMAILJS_SERVICE_ID: string;
+		PUBLIC_EMAILJS_TEMPLATE_ID: string;
+		PUBLIC_EMAILJS_PUBLIC_KEY: string;
 		[key: `PUBLIC_${string}`]: string | undefined;
 	}
 }
